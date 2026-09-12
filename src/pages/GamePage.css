@@ -27,16 +27,7 @@
   font-size: var(--font-size-caption);
 }
 
-.game-page__canvas-placeholder {
-  flex: 1;
+.game-page > .game-canvas {
   width: 100%;
   max-width: var(--max-content-width);
-  min-height: 320px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  background: var(--color-bg-panel);
-  border: 1px dashed var(--color-border-strong);
-  border-radius: var(--radius-lg);
 }

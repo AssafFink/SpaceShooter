@@ -1,15 +1,17 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/common/Button';
+import { GameCanvas } from '../components/game-ui/GameCanvas';
 import { ROUTES } from '../types/navigation';
 import './GamePage.css';
 
 /**
  * מסך המשחק — spec/PRD.md §4.3.
  *
- * ב-Milestone 1 זהו שלד בלבד: placeholder לאזור המשחק וכפתור "סיים משחק"
- * (שכרגע פשוט חוזר למסך הראשי, ללא Dialog אישור).
+ * ב-Milestone 2 (Core Game Prototype) הוחלף ה-placeholder ב-Canvas אמיתי:
+ * רקע חלל + כוכבים, תותח בתחתית שמסתובב לכיוון הלחיצה/נגיעה, וקליע לייזר
+ * הנע מהתותח אל נקודת הלחיצה (src/game/GameEngine.ts דרך useGameEngine).
  *
- * ה-Canvas, ה-Game Loop, ה-HUD האמיתי, התותח והאויבים מגיעים ב-Milestone 2+.
+ * HUD ה-אמיתי (ניקוד/חיים/שלב/אויבים) מגיע ב-Milestone 3/4 — כרגע placeholder.
  * ה-Dialog "האם אתה בטוח שברצונך לסיים את המשחק?" מגיע ב-Milestone 5.
  */
 export function GamePage() {
@@ -25,9 +27,7 @@ export function GamePage() {
         <span className="game-page__hud-item">👾 נותרו: 0</span>
       </div>
 
-      <div className="game-page__canvas-placeholder">
-        <p>אזור המשחק (Canvas) יתווסף ב-Milestone הבא</p>
-      </div>
+      <GameCanvas />
 
       <Button variant="danger" onClick={() => navigate(ROUTES.home)}>
         סיים משחק
