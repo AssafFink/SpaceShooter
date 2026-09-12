@@ -1,0 +1,27 @@
+.game-over-page {
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.game-over-page__icon {
+  font-size: 4rem;
+  filter: drop-shadow(0 0 20px rgba(255, 200, 61, 0.6));
+}
+
+.game-over-page__result {
+  color: var(--color-success);
+}
+
+.game-over-page__stats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  width: 100%;
+}
+
+.game-over-page__stats p {
+  margin: 0;
+  color: var(--color-text);
+}

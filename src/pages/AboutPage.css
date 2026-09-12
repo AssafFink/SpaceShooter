@@ -1,0 +1,25 @@
+.about-page {
+  align-items: center;
+  text-align: center;
+}
+
+.about-page__logo {
+  font-size: 4rem;
+  filter: drop-shadow(var(--glow-purple));
+}
+
+.about-page__title {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent-purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.about-page__text {
+  max-width: 32em;
+}
+
+.about-page__credit {
+  color: var(--color-accent-yellow);
+  font-weight: var(--font-weight-bold);
+}

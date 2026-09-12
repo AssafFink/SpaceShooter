@@ -1,0 +1,134 @@
+@import '@fontsource/rubik/400.css';
+@import '@fontsource/rubik/700.css';
+@import './variables.css';
+
+/* ===========================================================
+   Global Reset + Base Styles
+   Mobile First, RTL
+   =========================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* מונע הגדלת פונט אוטומטית ב-iOS Safari בסיבוב מסך */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--font-size-body);
+  line-height: 1.5;
+  direction: rtl;
+  /* רקע חלל: גרדיאנט כהה עדין + כוכבים סטטיים (רדיאלים חוזרים) */
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(248, 250, 255, 0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 30% 70%, rgba(248, 250, 255, 0.5) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 50% 15%, rgba(248, 250, 255, 0.7) 50%, transparent 50%),
+    radial-gradient(1px 1px at 70% 45%, rgba(248, 250, 255, 0.5) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 85% 80%, rgba(248, 250, 255, 0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 95% 25%, rgba(248, 250, 255, 0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 20% 90%, rgba(248, 250, 255, 0.4) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 60% 60%, rgba(248, 250, 255, 0.5) 50%, transparent 50%);
+  background-repeat: repeat;
+  background-size: 400px 400px;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: var(--font-weight-bold);
+  margin: 0 0 var(--spacing-md);
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+}
+
+p {
+  margin: 0 0 var(--spacing-md);
+  color: var(--color-text-muted);
+}
+
+.caption {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-muted);
+}
+
+a {
+  color: var(--color-primary);
+}
+
+button {
+  font-family: inherit;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- Focus state נגיש לניווט ב-Desktop (Keyboard) --- */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
+/* --- Panel / Card משותף --- */
+.panel {
+  background: var(--color-bg-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+  padding: var(--spacing-lg);
+}
+
+/* --- מבנה עמוד כללי (Mobile First) --- */
+.page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+  padding: var(--spacing-lg) var(--spacing-md) var(--spacing-2xl);
+  gap: var(--spacing-lg);
+}
+
+.page__title {
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .page {
+    padding: var(--spacing-2xl) var(--spacing-lg);
+  }
+}

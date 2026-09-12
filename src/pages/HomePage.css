@@ -1,0 +1,31 @@
+.home-page {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+}
+
+.home-page__logo {
+  font-size: 5rem;
+  line-height: 1;
+  filter: drop-shadow(var(--glow-purple));
+}
+
+.home-page__title {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent-purple));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: clamp(2rem, 8vw, 3rem);
+  margin-bottom: var(--spacing-sm);
+}
+
+.home-page__tagline {
+  margin-bottom: var(--spacing-lg);
+}
+
+.home-page__start {
+  padding-inline: var(--spacing-2xl);
+  font-size: 1.125rem;
+  text-decoration: none;
+}

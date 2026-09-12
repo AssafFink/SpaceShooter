@@ -1,0 +1,50 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch-target-min);
+  padding: var(--spacing-sm) var(--spacing-xl);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-body);
+  cursor: pointer;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    opacity var(--transition-fast);
+  color: var(--color-text);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn--primary {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent-purple));
+  box-shadow: var(--glow-primary);
+}
+
+.btn--success {
+  background: linear-gradient(135deg, var(--color-success), #2fbf52);
+  box-shadow: 0 0 16px rgba(76, 217, 100, 0.45);
+}
+
+.btn--danger {
+  background: linear-gradient(135deg, var(--color-danger), #d43a58);
+  box-shadow: 0 0 16px rgba(255, 77, 109, 0.4);
+}
+
+.btn--ghost {
+  background: transparent;
+  border: 2px solid var(--color-border-strong);
+  color: var(--color-text);
+  box-shadow: none;
+}
