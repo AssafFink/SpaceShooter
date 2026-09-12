@@ -1,0 +1,17 @@
+.game-hud {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  max-width: var(--max-content-width);
+}
+
+.game-hud__item {
+  background: var(--color-bg-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xs) var(--spacing-md);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-caption);
+}

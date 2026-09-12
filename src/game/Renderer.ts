@@ -1,8 +1,20 @@
 import { GAME_CONFIG } from './gameConfig';
+import { getEnemyRadius } from './Enemy';
 import type { Cannon } from './Cannon';
-import type { GameBounds, Projectile } from '../types/game';
+import type { Enemy, EnemySize, Explosion, GameBounds, Projectile } from '../types/game';
 
-const { background: bgConfig, colors, cannon: cannonConfig } = GAME_CONFIG;
+const {
+  background: bgConfig,
+  colors,
+  cannon: cannonConfig,
+  explosion: explosionConfig,
+} = GAME_CONFIG;
+
+const ENEMY_BODY_COLOR: Record<EnemySize, string> = {
+  small: colors.enemySmall,
+  medium: colors.enemyMedium,
+  large: colors.enemyLarge,
+};
 
 interface Star {
   x: number;
@@ -86,6 +98,115 @@ export class Renderer {
 
     ctx.shadowBlur = 0;
     ctx.restore();
+  }
+
+  /**
+   * מצייר יצור חלל מצחיק וידידותי: כיפה עגולה + "רגליים" מסולסלות + שתי עיניים.
+   * מקור: spec/DESIGN.md ("יצורי חלל מצחיקים וצבעוניים"), ARCHITECTURE §43.
+   * שלושת הסוגים חולקים את אותה פונקציית ציור — נבדלים בגודל ובצבע בלבד (§15).
+   */
+  drawEnemies(enemies: readonly Enemy[]): void {
+    const { ctx } = this;
+
+    for (const enemy of enemies) {
+      const radius = getEnemyRadius(enemy.size);
+      const bodyColor = ENEMY_BODY_COLOR[enemy.size];
+
+      ctx.save();
+      ctx.translate(enemy.x, enemy.y);
+
+      // רגליים מסולסלות מתחת לגוף — נותנות אופי של יצור ולא של כדור.
+      ctx.strokeStyle = bodyColor;
+      ctx.lineWidth = Math.max(2, radius * 0.15);
+      ctx.lineCap = 'round';
+      const legCount = 3;
+      for (let i = 0; i < legCount; i++) {
+        const legX = (radius * 0.7 * (i - (legCount - 1) / 2)) / Math.max(1, legCount - 1);
+        ctx.beginPath();
+        ctx.moveTo(legX, radius * 0.6);
+        ctx.quadraticCurveTo(legX * 1.4, radius * 1.05, legX * 0.6, radius * 1.25);
+        ctx.stroke();
+      }
+
+      // גוף — כיפה עגולה עם Glow עדין בצבע הסוג.
+      ctx.shadowColor = bodyColor;
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = bodyColor;
+      ctx.beginPath();
+      ctx.arc(0, 0, radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // שתי עיניים גדולות וידידותיות עם ברק.
+      const eyeOffsetX = radius * 0.4;
+      const eyeOffsetY = radius * -0.1;
+      const eyeRadius = radius * 0.3;
+      for (const sign of [-1, 1]) {
+        ctx.fillStyle = colors.enemyEye;
+        ctx.beginPath();
+        ctx.arc(sign * eyeOffsetX, eyeOffsetY, eyeRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = colors.enemyEyeSpark;
+        ctx.beginPath();
+        ctx.arc(
+          sign * eyeOffsetX + eyeRadius * 0.3,
+          eyeOffsetY - eyeRadius * 0.3,
+          eyeRadius * 0.35,
+          0,
+          Math.PI * 2,
+        );
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+  }
+
+  /**
+   * מצייר אנימציית פיצוץ: טבעת מתרחבת + גרעין דוהה + ניצוצות מתפזרים.
+   * מקור: spec/ARCHITECTURE.md §45.
+   */
+  drawExplosions(explosions: readonly Explosion[]): void {
+    const { ctx } = this;
+
+    for (const explosion of explosions) {
+      const progress = Math.min(1, explosion.elapsedSeconds / explosion.durationSeconds);
+      const radius = explosion.maxRadius * progress;
+      const alpha = 1 - progress;
+
+      ctx.save();
+      ctx.translate(explosion.x, explosion.y);
+      ctx.globalAlpha = alpha;
+
+      // גרעין דוהה במרכז.
+      ctx.fillStyle = colors.explosionCore;
+      ctx.beginPath();
+      ctx.arc(0, 0, explosion.maxRadius * 0.35 * (1 - progress * 0.6), 0, Math.PI * 2);
+      ctx.fill();
+
+      // טבעת מתרחבת.
+      ctx.strokeStyle = colors.explosionRing;
+      ctx.lineWidth = explosionConfig.ringWidth;
+      ctx.beginPath();
+      ctx.arc(0, 0, radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // ניצוצות מתפזרים — זווית קבועה לפי אינדקס כדי שלא "ירצדו" בין פריימים.
+      ctx.fillStyle = colors.explosionSpark;
+      for (let i = 0; i < explosionConfig.sparkCount; i++) {
+        const angle = (Math.PI * 2 * i) / explosionConfig.sparkCount;
+        const sparkDistance = radius * 1.1;
+        const sparkX = Math.cos(angle) * sparkDistance;
+        const sparkY = Math.sin(angle) * sparkDistance;
+        ctx.beginPath();
+        ctx.arc(sparkX, sparkY, Math.max(1, explosionConfig.ringWidth * 0.4), 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.globalAlpha = 1;
+      ctx.restore();
+    }
   }
 
   drawProjectiles(projectiles: readonly Projectile[]): void {

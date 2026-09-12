@@ -27,11 +27,19 @@ export function createProjectile(id: string, origin: Vector2, target: Vector2): 
     velocityX: dirX * config.speed,
     velocityY: dirY * config.speed,
     active: true,
+    prevX: origin.x,
+    prevY: origin.y,
   };
 }
 
-/** מקדם את הקליע לפי המהירות ו-Delta Time (ARCHITECTURE §7). */
+/**
+ * מקדם את הקליע לפי המהירות ו-Delta Time (ARCHITECTURE §7).
+ * שומר את המיקום הקודם ב-prevX/prevY — נדרש ל-Swept Collision (Milestone 3,
+ * ראו spec/plans/milestone-3.md §3.3).
+ */
 export function updateProjectile(projectile: Projectile, deltaSeconds: number): void {
+  projectile.prevX = projectile.x;
+  projectile.prevY = projectile.y;
   projectile.x += projectile.velocityX * deltaSeconds;
   projectile.y += projectile.velocityY * deltaSeconds;
 }

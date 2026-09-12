@@ -1,17 +1,24 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { GameEngine } from '../game/GameEngine';
+import type { GameStats } from '../types/game';
+
+const INITIAL_STATS: GameStats = { score: 0, enemiesRemaining: 0 };
 
 /**
  * הגשר בין React למנוע המשחק (GameEngine).
- * מקור: spec/ARCHITECTURE.md §51 (הפרדה בין React למנוע).
+ * מקור: spec/ARCHITECTURE.md §51 (הפרדה בין React למנוע), §54 (Milestone 3).
  *
  * אחראי על: יצירת ה-Engine, האזנה ל-Resize ול-Input, הפעלה, וניקוי מלא
  * ב-unmount (ARCHITECTURE §53) — כולל טיפול נכון ב-React StrictMode
  * (ה-effect רץ פעמיים ב-dev; ה-cleanup חייב להיות מלא ואידמפוטנטי).
+ *
+ * `stats` (ניקוד + אויבים שנותרו) מתעדכן דרך callback שה-Engine קורא לו רק
+ * כשערך משתנה בפועל — אין Re-render של React בכל Frame (ARCHITECTURE §54).
  */
 export function useGameEngine() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [stats, setStats] = useState<GameStats>(INITIAL_STATS);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -19,6 +26,8 @@ export function useGameEngine() {
     if (!container || !canvas) return;
 
     const engine = new GameEngine(canvas);
+    setStats(INITIAL_STATS);
+    engine.setOnStatsChange(setStats);
 
     const resizeObserver = new ResizeObserver((entries) => {
       const entry = entries[0];
@@ -48,5 +57,5 @@ export function useGameEngine() {
     };
   }, []);
 
-  return { containerRef, canvasRef };
+  return { containerRef, canvasRef, stats };
 }

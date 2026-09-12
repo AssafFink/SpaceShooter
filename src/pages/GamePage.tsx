@@ -1,33 +1,30 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/common/Button';
 import { GameCanvas } from '../components/game-ui/GameCanvas';
+import { GameHud } from '../components/game-ui/GameHud';
+import { useGameEngine } from '../hooks/useGameEngine';
 import { ROUTES } from '../types/navigation';
 import './GamePage.css';
 
 /**
  * מסך המשחק — spec/PRD.md §4.3.
  *
- * ב-Milestone 2 (Core Game Prototype) הוחלף ה-placeholder ב-Canvas אמיתי:
- * רקע חלל + כוכבים, תותח בתחתית שמסתובב לכיוון הלחיצה/נגיעה, וקליע לייזר
- * הנע מהתותח אל נקודת הלחיצה (src/game/GameEngine.ts דרך useGameEngine).
+ * Milestone 3 (Enemies & Combat): אויבים, Collision, ניקוד ו-HUD אמיתי מחוברים.
+ * useGameEngine נקרא כאן (ולא ב-GameCanvas) כי ה-HUD (React, מחוץ ל-Canvas,
+ * ARCHITECTURE §41) זקוק לאותם נתוני stats שהמנוע מפרסם.
  *
- * HUD ה-אמיתי (ניקוד/חיים/שלב/אויבים) מגיע ב-Milestone 3/4 — כרגע placeholder.
+ * חיים ושלב עדיין placeholder קבוע — Milestone 4.
  * ה-Dialog "האם אתה בטוח שברצונך לסיים את המשחק?" מגיע ב-Milestone 5.
  */
 export function GamePage() {
   const navigate = useNavigate();
+  const { containerRef, canvasRef, stats } = useGameEngine();
 
   return (
     <div className="game-page">
-      {/* HUD placeholder — הערכים האמיתיים מגיעים ב-Milestone 3/4 */}
-      <div className="game-page__hud" aria-hidden="true">
-        <span className="game-page__hud-item">⭐ ניקוד: 0</span>
-        <span className="game-page__hud-item">❤️ חיים: 3</span>
-        <span className="game-page__hud-item">🚀 שלב: 1</span>
-        <span className="game-page__hud-item">👾 נותרו: 0</span>
-      </div>
+      <GameHud score={stats.score} enemiesRemaining={stats.enemiesRemaining} />
 
-      <GameCanvas />
+      <GameCanvas containerRef={containerRef} canvasRef={canvasRef} />
 
       <Button variant="danger" onClick={() => navigate(ROUTES.home)}>
         סיים משחק
