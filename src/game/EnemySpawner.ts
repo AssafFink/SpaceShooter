@@ -1,17 +1,18 @@
 import { GAME_CONFIG } from './gameConfig';
-import { createEnemy, getEnemyRadius } from './Enemy';
+import { createEnemy, enemySpeedScale, getEnemyRadius } from './Enemy';
 import { pickWeighted, randomInt, randomRange } from './random';
 import type { Enemy, EnemySize, GameBounds, LevelConfig, Vector2 } from '../types/game';
 
 const { enemy: enemyConfig } = GAME_CONFIG;
 
 /**
- * מוסיף אויבים בהדרגה לאורך שלב (ARCHITECTURE §17).
- * מקור: spec/plans/milestone-4.md §4.
+ * Adds enemies gradually over the course of a level (ARCHITECTURE §17).
+ * Source: spec/plans/milestone-4.md §4.
  *
- * מקבל `LevelConfig` ב-`reset()` — הכמות, המהירות, המרווחים וההסתברויות
- * מוגרלות מתוך הטווחים של אותו שלב (ARCHITECTURE §19), כך שאותו שלב נראה
- * שונה מעט בין משחקים אך נשאר באותה רמת קושי.
+ * Receives a `LevelConfig` in `reset()` — the count, speed, intervals and
+ * probabilities are rolled from that level's ranges (ARCHITECTURE §19), so
+ * the same level looks slightly different between games but stays at the
+ * same difficulty.
  */
 export class EnemySpawner {
   private config: LevelConfig | null = null;
@@ -20,7 +21,7 @@ export class EnemySpawner {
   private timeUntilNextSpawnSeconds = 0;
   private nextId = 1;
 
-  /** מאפס מונה וטיימר לפי הגדרת השלב — נקרא ב-Restart Level ובתחילת כל שלב. */
+  /** Resets the counter and timer per the level definition — called on Restart Level and at the start of every level. */
   reset(config: LevelConfig): void {
     this.config = config;
     this.plannedCount = randomInt(config.enemyCountMin, config.enemyCountMax);
@@ -28,17 +29,17 @@ export class EnemySpawner {
     this.timeUntilNextSpawnSeconds = GAME_CONFIG.firstSpawnDelaySeconds;
   }
 
-  /** מספר האויבים שעדיין לא נוצרו — נכנס לחישוב `enemiesRemaining`. */
+  /** The number of enemies not yet created — feeds into the `enemiesRemaining` calculation. */
   get remainingToSpawn(): number {
     return this.plannedCount - this.spawnedCount;
   }
 
-  /** האם כל האויבים המתוכננים כבר נוצרו. */
+  /** Whether every planned enemy has already been created. */
   get isFinished(): boolean {
     return this.spawnedCount >= this.plannedCount;
   }
 
-  /** מקדם את הטיימר ומחזיר 0 או יותר אויבים חדשים שנוצרו בפריים הזה. */
+  /** Advances the timer and returns 0 or more new enemies created this frame. */
   update(deltaSeconds: number, bounds: GameBounds, cannonPosition: Vector2): Enemy[] {
     if (!this.config || this.isFinished || bounds.width <= 0) return [];
 
@@ -66,7 +67,11 @@ export class EnemySpawner {
       bounds.width > margin * 2
         ? randomRange(margin, bounds.width - margin)
         : bounds.width / 2;
-    const speed = randomRange(config.enemySpeedMin, config.enemySpeedMax);
+    // Speed is defined per level as px/s, but the on-screen travel distance
+    // depends on the game area's height — normalize so Landscape isn't
+    // unfairly harder than Portrait (ARCHITECTURE §16; F6).
+    const speed =
+      randomRange(config.enemySpeedMin, config.enemySpeedMax) * enemySpeedScale(bounds.height);
 
     this.spawnedCount += 1;
     const id = `enemy-${this.nextId++}`;

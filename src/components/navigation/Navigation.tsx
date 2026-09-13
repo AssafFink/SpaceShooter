@@ -5,12 +5,12 @@ import { NAV_ITEMS } from '../../types/navigation';
 import './Navigation.css';
 
 /**
- * תפריט ניווט ראשי.
- * Desktop: שורת ניווט רגילה. Mobile: Hamburger Menu.
- * מקור: spec/ARCHITECTURE.md §38, spec/DESIGN.md.
+ * Main navigation menu.
+ * Desktop: a regular nav bar. Mobile: Hamburger Menu.
+ * Source: spec/ARCHITECTURE.md §38, spec/DESIGN.md.
  *
- * מוסתר לחלוטין בזמן משחק פעיל (App.tsx, Milestone 5) — PRD §4.2, ARCHITECTURE §39.
- * כולל SoundToggle משותף (spec/PRD.md §4.18) — אותו מצב מוצג גם ב-GameHud.
+ * Hidden entirely during an active game (App.tsx, Milestone 5) — PRD §4.2, ARCHITECTURE §39.
+ * Includes the shared SoundToggle (spec/PRD.md §4.18) — the same state is shown in GameHud too.
  */
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +26,7 @@ export function Navigation() {
           Space Shooter
         </NavLink>
 
-        {/* תפריט Desktop */}
+        {/* Desktop menu */}
         <nav className="nav__links nav__links--desktop" aria-label="ניווט ראשי">
           {NAV_ITEMS.map((item) => (
             <NavLink
@@ -44,7 +44,7 @@ export function Navigation() {
         <div className="nav__actions">
           <SoundToggle />
 
-          {/* כפתור Hamburger — Mobile בלבד */}
+          {/* Hamburger button — Mobile only */}
           <button
             type="button"
             className="nav__hamburger"
@@ -59,7 +59,7 @@ export function Navigation() {
         </div>
       </div>
 
-      {/* פאנל תפריט Mobile */}
+      {/* Mobile menu panel */}
       {isOpen && (
         <nav className="nav__links nav__links--mobile" aria-label="ניווט ראשי (מובייל)">
           {NAV_ITEMS.map((item) => (

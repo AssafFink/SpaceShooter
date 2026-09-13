@@ -10,21 +10,22 @@ import { StatisticsPage } from './pages/StatisticsPage';
 import { ROUTES } from './types/navigation';
 
 /**
- * שורש האפליקציה: App Shell (Navigation) + Routing.
- * מקור: spec/ARCHITECTURE.md §4.
+ * App root: App Shell (Navigation) + Routing.
+ * Source: spec/ARCHITECTURE.md §4.
  *
- * חסימת ניווט בזמן משחק פעיל (PRD §4.2, ARCHITECTURE §39) — Milestone 5:
- * ה-`Navigation` מוסתר לחלוטין בנתיב `/game` בלבד. הנתיב הזה נכנס רק דרך
- * "התחל"/"משחק חדש" ונעזב רק דרך "סיים משחק" (→ `/`) או win/loss
- * (→ `/game-over`) — לכן `pathname === '/game'` הוא Proxy מדויק ל"משחק פעיל".
- * ב-`/game-over` (אינו משחק פעיל) ה-Navigation מוצג, כדי לא לכלוא את המשתמש.
+ * Blocking navigation during an active game (PRD §4.2, ARCHITECTURE §39) —
+ * Milestone 5: `Navigation` is hidden entirely on the `/game` route only.
+ * That route is only entered via "Start"/"New Game" and only left via "End
+ * Game" (→ `/`) or win/loss (→ `/game-over`) — so `pathname === '/game'` is
+ * an exact proxy for "active game". On `/game-over` (not an active game)
+ * Navigation is shown, so the user isn't trapped.
  */
 function App() {
   const location = useLocation();
   const isActiveGame = location.pathname === ROUTES.game;
 
-  // שכבת האודיו של האפליקציה (Milestone 7): מסנכרנת Mute עם SoundContext
-  // ומתחילה מוזיקת רקע אחרי האינטראקציה הראשונה. חוצת-מסכים, מורכבת פעם אחת.
+  // The app's audio layer (Milestone 7): syncs Mute with SoundContext and
+  // starts background music after the first interaction. Cross-screen, composed once.
   useAudio();
 
   return (

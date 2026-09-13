@@ -8,7 +8,7 @@
   padding: var(--spacing-lg);
   background: var(--color-overlay);
   backdrop-filter: blur(4px);
-  /* Milestone 7: כניסת הרקע החשוך. */
+  /* Milestone 7: the dark backdrop's entrance. */
   animation: fade-in var(--transition-fast) ease-out;
 }
 
@@ -20,7 +20,7 @@
   flex-direction: column;
   gap: var(--spacing-lg);
   box-shadow: var(--shadow-panel), var(--glow-purple);
-  /* Milestone 7: כניסה קופצת של החלונית. */
+  /* Milestone 7: the panel's pop-in entrance. */
   animation: pop-in var(--transition-base) ease-out;
 }
 

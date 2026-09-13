@@ -13,11 +13,11 @@ function formatDate(iso: string): string {
 }
 
 /**
- * מסך סטטיסטיקות — spec/PRD.md §4.15.
+ * Statistics screen — spec/PRD.md §4.15.
  *
- * Milestone 6: קורא את היסטוריית המשחקים מ-localStorage דרך `storageService`
- * (ARCHITECTURE §29), ומציג את המשחק האחרון ראשון (§27). המסך הוא לצפייה
- * בלבד — אין מחיקה או עריכה.
+ * Milestone 6: reads the game history from localStorage via
+ * `storageService` (ARCHITECTURE §29), and shows the most recent game first
+ * (§27). The screen is view-only — no deleting or editing.
  */
 export function StatisticsPage() {
   const results = getStatistics();

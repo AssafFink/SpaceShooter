@@ -6,12 +6,13 @@ interface SoundToggleProps {
 }
 
 /**
- * אייקון Sound On / Sound Off משותף — Milestone 5.
- * מקור: spec/PRD.md §4.18, spec/ARCHITECTURE.md §32, §55 (aria-label לאייקון).
+ * Shared Sound On / Sound Off icon — Milestone 5.
+ * Source: spec/PRD.md §4.18, spec/ARCHITECTURE.md §32, §55 (aria-label for the icon).
  *
- * מוצג הן ב-`Navigation` (מסכים שאינם משחק) והן ב-`GameHud` (מסך משחק) —
- * שניהם צורכים את אותו `SoundContext`, כך שמצב ההשתקה משותף לכל האפליקציה.
- * ב-M5 מדובר ב-UI + State בלבד: החלפת אייקון, ללא אודיו בפועל (Milestone 7).
+ * Shown both in `Navigation` (non-game screens) and in `GameHud` (game
+ * screen) — both consume the same `SoundContext`, so the mute state is
+ * shared across the whole app. In M5 this is UI + State only: swapping the
+ * icon, with no real audio yet (Milestone 7).
  */
 export function SoundToggle({ className }: SoundToggleProps) {
   const { muted, toggle } = useSound();

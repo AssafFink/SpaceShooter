@@ -7,12 +7,13 @@ interface ConfirmEndGameDialogProps {
 }
 
 /**
- * Confirmation Dialog לסיום יזום של המשחק — spec/PRD.md §4.14, Flow 7.
- * מקור: spec/ARCHITECTURE.md §40.
+ * Confirmation Dialog for deliberately ending the game — spec/PRD.md §4.14, Flow 7.
+ * Source: spec/ARCHITECTURE.md §40.
  *
- * עטיפה דקה של `Modal` המשותף. "ביטול" הוא הפעולה ההפיכה (ממשיכים לשחק);
- * "סיים משחק" חוזר למסך הראשי בלי לשמור את המשחק (אין localStorage ב-M5 בכלל).
- * המשחק מוקפא (`engine.stop()`) כל עוד ה-Dialog הזה פתוח — ראו GamePage.
+ * A thin wrapper around the shared `Modal`. "Cancel" is the reversible
+ * action (keep playing); "End Game" returns to the home screen without
+ * saving the game (no localStorage involved in M5 at all). The game is
+ * frozen (`engine.stop()`) for as long as this Dialog is open — see GamePage.
  */
 export function ConfirmEndGameDialog({ onCancel, onConfirm }: ConfirmEndGameDialogProps) {
   return (

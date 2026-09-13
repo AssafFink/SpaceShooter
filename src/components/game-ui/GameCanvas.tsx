@@ -7,13 +7,14 @@ interface GameCanvasProps {
 }
 
 /**
- * רכיב React עוטף ל-Canvas של אזור המשחק.
- * מקור: spec/ARCHITECTURE.md §6.
+ * React component wrapping the game area's Canvas.
+ * Source: spec/ARCHITECTURE.md §6.
  *
- * אינו מכיל לוגיקת משחק — כל הלוגיקה ב-GameEngine (דרך useGameEngine).
- * מקבל את ה-refs כ-props: ה-Hook עצמו רץ ב-GamePage (Milestone 3) כי ה-HUD
- * (React, מחוץ ל-Canvas) זקוק לאותם נתונים — ARCHITECTURE §41.
- * ה-div החיצוני הוא "מודד הגודל" של ResizeObserver; ה-canvas ממלא אותו.
+ * Contains no game logic — all logic lives in GameEngine (via
+ * useGameEngine). Receives the refs as props: the Hook itself runs in
+ * GamePage (Milestone 3) because the HUD (React, outside the Canvas) needs
+ * the same data — ARCHITECTURE §41. The outer div is the ResizeObserver's
+ * "size gauge"; the canvas fills it.
  */
 export function GameCanvas({ containerRef, canvasRef }: GameCanvasProps) {
   return (

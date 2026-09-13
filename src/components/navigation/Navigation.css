@@ -89,7 +89,7 @@
   padding: var(--spacing-sm) var(--spacing-md);
 }
 
-/* Desktop: הצגת שורת ניווט רגילה, הסתרת Hamburger */
+/* Desktop: show the regular nav bar, hide the Hamburger */
 @media (min-width: 768px) {
   .nav__links--desktop {
     display: flex;

@@ -46,6 +46,24 @@ export function getStatistics(): GameResult[] {
 }
 
 /**
+ * Generates a unique id for a saved game result. `crypto.randomUUID()` only
+ * exists in a Secure Context (HTTPS or localhost) — on a phone reached over
+ * a plain http:// LAN address it throws, and without this fallback the
+ * try/catch below would silently drop the whole result. See
+ * spec/plans/milestone-9.md §1 (F2).
+ */
+function createResultId(): string {
+  try {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+  } catch {
+    // Fall through to the manual fallback below.
+  }
+  return `game-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+/**
  * Appends a new game result. Only called for a finished game (win/loss) —
  * see GamePage.tsx. Silently no-ops if storage is unavailable or full.
  */
@@ -56,7 +74,7 @@ export function saveGameResult(input: {
 }): void {
   try {
     const newResult: GameResult = {
-      id: crypto.randomUUID(),
+      id: createResultId(),
       date: new Date().toISOString(),
       finalScore: input.finalScore,
       levelReached: input.levelReached,

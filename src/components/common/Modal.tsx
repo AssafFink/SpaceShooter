@@ -10,12 +10,13 @@ interface ModalProps {
 }
 
 /**
- * Dialog נגיש משותף — Milestone 5.
- * מקור: spec/PRD.md §4.14, spec/ARCHITECTURE.md §40, §55 (נגישות).
+ * Shared accessible Dialog — Milestone 5.
+ * Source: spec/PRD.md §4.14, spec/ARCHITECTURE.md §40, §55 (accessibility).
  *
- * `role="dialog"` + `aria-modal` + `aria-labelledby`; Esc וסגירה בלחיצה על
- * הרקע קוראים ל-`onClose` (מתפרש כ"ביטול" — הפעולה ההפיכה). מיקוד ראשוני
- * על ה-Panel כדי שמקלדת/קורא-מסך יזהו מיד שנפתח Dialog.
+ * `role="dialog"` + `aria-modal` + `aria-labelledby`; Esc and clicking the
+ * backdrop both call `onClose` (interpreted as "Cancel" — the reversible
+ * action). Initial focus on the Panel so keyboard/screen-reader users
+ * immediately notice a Dialog opened.
  */
 export function Modal({ titleId, title, children, onClose }: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);

@@ -4,13 +4,14 @@ import type { GameOverState } from '../types/navigation';
 import './GameOverPage.css';
 
 /**
- * מסך סיום משחק — spec/PRD.md §4.13, spec/DESIGN.md (Mockup "סיום משחק").
+ * Game Over screen — spec/PRD.md §4.13, spec/DESIGN.md (Mockup "Game Over").
  *
- * קורא את תוצאת המשחק (win/loss, ניקוד, שלב) מ-`location.state`, שמועבר
- * מ-`GamePage` בניווט. אם המסך נפתח בלי state (כניסה ישירה או Refresh) —
- * אין תוצאה אמיתית להציג, ולכן מפנים בחזרה ל-`/`.
+ * Reads the game result (win/loss, score, level) from `location.state`,
+ * passed from `GamePage` on navigation. If the screen is opened without
+ * state (direct entry or Refresh) — there's no real result to show, so it
+ * redirects back to `/`.
  *
- * שמירת התוצאה בסטטיסטיקות — Milestone 6.
+ * Saving the result to statistics — Milestone 6.
  */
 export function GameOverPage() {
   const location = useLocation();

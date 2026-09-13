@@ -2,8 +2,8 @@ import { Wordmark } from '../components/common/Wordmark';
 import './AboutPage.css';
 
 /**
- * מסך אודות — spec/PRD.md §4.17, spec/DESIGN.md (Mockup "אודות").
- * משתמש ב-`Wordmark` המשותף עם מסך הראשי לעקביות.
+ * About screen — spec/PRD.md §4.17, spec/DESIGN.md (Mockup "About").
+ * Uses the `Wordmark` shared with the home screen for consistency.
  */
 export function AboutPage() {
   return (

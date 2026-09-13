@@ -5,11 +5,12 @@ interface LevelCompleteMessageProps {
 }
 
 /**
- * הודעת "שלב X הושלם" — Overlay React מעל ה-Canvas (לא ציור Canvas).
- * מקור: spec/ARCHITECTURE.md §20, §41; spec/PRD.md §4.10.
+ * "Level X complete" message — a React Overlay above the Canvas (not a Canvas drawing).
+ * Source: spec/ARCHITECTURE.md §20, §41; spec/PRD.md §4.10.
  *
- * מוצג כל עוד `status === 'level-complete'` (GamePage); המעבר האוטומטי
- * לשלב הבא מתוזמן ב-GameEngine, לא ברכיב הזה. Polish של המעבר — Milestone 7.
+ * Shown for as long as `status === 'level-complete'` (GamePage); the
+ * automatic transition to the next level is timed in GameEngine, not in
+ * this component. Transition Polish — Milestone 7.
  */
 export function LevelCompleteMessage({ level }: LevelCompleteMessageProps) {
   return (

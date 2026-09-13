@@ -12,17 +12,18 @@ import type { GameOverState } from '../types/navigation';
 import './GamePage.css';
 
 /**
- * מסך המשחק — spec/PRD.md §4.3.
+ * Game screen — spec/PRD.md §4.3.
  *
- * Milestone 5: כפתור "סיים משחק" פותח Confirmation Dialog (PRD §4.14, Flow 7)
- * ומקפיא את המשחק (`pause()`) כל עוד הוא פתוח — "ביטול" ממשיך (`resume()`),
- * "אישור" מנווט ל-`/` בלי לשמור. הניווט חסום בזמן משחק פעיל דרך הסתרת
- * ה-Navigation ב-`App.tsx`.
+ * Milestone 5: the "End Game" button opens a Confirmation Dialog (PRD §4.14,
+ * Flow 7) and freezes the game (`pause()`) for as long as it's open —
+ * "Cancel" resumes (`resume()`), "Confirm" navigates to `/` without saving.
+ * Navigation is blocked during an active game by hiding Navigation in `App.tsx`.
  *
- * Milestone 6: בעת win/loss נשמרת תוצאת המשחק ב-localStorage (PRD Flows 5-6,
- * ARCHITECTURE §28) **לפני** הניווט ל-`/game-over`. `savedRef` מבטיח שמירה
- * פעם אחת בדיוק לכל משחק, כולל תחת React StrictMode. סיום יזום (Flow 7)
- * ממשיך לנווט ל-`/` בלי לגעת ב-Service כלל — אינו נשמר.
+ * Milestone 6: on win/loss the game result is saved to localStorage (PRD
+ * Flows 5-6, ARCHITECTURE §28) **before** navigating to `/game-over`.
+ * `savedRef` guarantees the save happens exactly once per game, including
+ * under React StrictMode. A deliberate end (Flow 7) still navigates to `/`
+ * without touching the Service at all — it isn't saved.
  */
 export function GamePage() {
   const navigate = useNavigate();

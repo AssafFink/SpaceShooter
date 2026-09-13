@@ -7,15 +7,15 @@
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   background: var(--color-bg);
-  /* מונע Scroll/Zoom/Gestures לא רצויים באזור המשחק (ARCHITECTURE §36, §55). */
+  /* Prevents unwanted Scroll/Zoom/Gestures in the game area (ARCHITECTURE §36, §55). */
   touch-action: none;
   -webkit-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Milestone 8: Landscape נמוך — מאפשר ל-Canvas להצטמצם כדי שהשאר (HUD,
-   כפתור) יישארו גלויים (spec/plans/milestone-8.md §1.3). */
+/* Milestone 8: short Landscape — lets the Canvas shrink so the rest (HUD,
+   button) stays visible (spec/plans/milestone-8.md §1.3). */
 @media (orientation: landscape) and (max-height: 500px) {
   .game-canvas {
     min-height: 140px;
@@ -23,18 +23,20 @@
 }
 
 .game-canvas__el {
-  /* position:absolute (לא Static) — קריטי: ל-<canvas> יש גודל אינטרינזי לפי
-     attributes ה-width/height (שה-Engine מעדכן ב-resize()). ב-Static
-     position, height:100% כנגד הורה בגובה auto נופל בחזרה לגודל האינטרינזי
-     הזה, ויוצר לולאת משוב עם ה-ResizeObserver (הגובה "נתקע" על ערך ישן/מנופח
-     — נצפה ב-Landscape, spec/plans/milestone-8.md §1.3-1.4). מיצוב מוחלט
-     מוציא את ה-canvas מזרימת ה-Layout — .game-canvas (position:relative)
-     נקבע אז אך ורק לפי Flexbox, בלי תלות הדדית בילד.
-     עדיין נדרש width/height:100% מפורש (לא di מסתמכים על inset:0 בלבד):
-     ל-Elements מוחלפים (Replaced Elements כמו canvas) עם position:absolute,
-     width/height:auto נופל לגודל האינטרינזי גם כשכל ה-inset מוגדר ל-0
-     (CSS2.1 §10.3.8/§10.6.4) — 100% הוא שמכריח את הגודל למלא את ה-Containing
-     Block בפועל. */
+  /* position:absolute (not Static) — critical: <canvas> has an intrinsic
+     size from its width/height attributes (which the Engine updates in
+     resize()). With Static position, height:100% against a parent with
+     auto height falls back to that intrinsic size, creating a feedback
+     loop with the ResizeObserver (the height gets "stuck" on a stale/
+     inflated value — observed in Landscape, spec/plans/milestone-8.md
+     §1.3-1.4). Absolute positioning takes the canvas out of the Layout
+     flow — .game-canvas (position:relative) is then sized purely by
+     Flexbox, with no mutual dependency on the child.
+     Explicit width/height:100% is still required (not relying on inset:0
+     alone): for Replaced Elements like canvas with position:absolute,
+     width/height:auto falls back to the intrinsic size even with every
+     inset set to 0 (CSS2.1 §10.3.8/§10.6.4) — it's the 100% that forces the
+     size to actually fill the Containing Block. */
   position: absolute;
   inset: 0;
   width: 100%;

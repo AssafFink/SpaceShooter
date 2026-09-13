@@ -1,9 +1,9 @@
 import { createContext } from 'react';
 
 /**
- * ה-Context עצמו, מופרד מ-`SoundContext.tsx` (שמייצא רק את רכיב ה-Provider)
- * כדי ש-React Fast Refresh יעבוד נכון על שני הקבצים.
- * ראו src/context/SoundContext.tsx לתיעוד המלא.
+ * The Context itself, separated from `SoundContext.tsx` (which exports only
+ * the Provider component) so React Fast Refresh works correctly on both files.
+ * See src/context/SoundContext.tsx for full documentation.
  */
 export interface SoundContextValue {
   muted: boolean;

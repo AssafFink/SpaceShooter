@@ -17,7 +17,7 @@
   color: var(--color-text);
 }
 
-/* Milestone 7: הגברת נוכחות ומשוב בריחוף (Desktop). */
+/* Milestone 7: stronger presence and feedback on hover (Desktop). */
 @media (hover: hover) {
   .btn:hover:not(:disabled) {
     transform: translateY(-1px) scale(1.02);

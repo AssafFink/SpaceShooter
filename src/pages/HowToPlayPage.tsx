@@ -7,7 +7,7 @@ interface EnemySizeInfo {
   className: string;
 }
 
-/** שלושת גדלי האויבים — Placeholder ויזואלי (Emoji); Assets אמיתיים ב-Milestone 7. */
+/** The three enemy sizes — a visual Placeholder (Emoji); real Assets in Milestone 7. */
 const ENEMY_SIZES: EnemySizeInfo[] = [
   { icon: '👾', label: 'קטן', hits: 'פגיעה 1', className: 'enemy-sizes__item--small' },
   { icon: '👾', label: 'בינוני', hits: '2 פגיעות', className: 'enemy-sizes__item--medium' },
@@ -15,9 +15,9 @@ const ENEMY_SIZES: EnemySizeInfo[] = [
 ];
 
 /**
- * מסך "איך לשחק" — spec/PRD.md §4.16, spec/DESIGN.md (Mockup "איך לשחק").
- * הסבר קצר: מטרת המשחק, איך משחקים (כולל שלושת גדלי האויבים), חיים,
- * מעבר שלב, הפסד.
+ * "How to Play" screen — spec/PRD.md §4.16, spec/DESIGN.md (Mockup "How to Play").
+ * A short explanation: game objective, how to play (including the three
+ * enemy sizes), lives, level transition, loss.
  */
 export function HowToPlayPage() {
   return (

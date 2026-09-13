@@ -1,22 +1,22 @@
 /**
- * Types בסיסיים למנוע המשחק — Milestone 2+3+4.
- * מקור: spec/ARCHITECTURE.md §8 (Game State), §12 (Projectile System),
+ * Core types for the game engine — Milestone 2+3+4.
+ * Source: spec/ARCHITECTURE.md §8 (Game State), §12 (Projectile System),
  * §14-15 (Enemy Model), §18 (Level Configuration), §45 (Explosion).
  */
 
-/** נקודה או וקטור דו-ממדי, ב-CSS Pixels יחסית לאזור המשחק. */
+/** A point or 2D vector, in CSS Pixels relative to the game area. */
 export interface Vector2 {
   x: number;
   y: number;
 }
 
-/** מידות אזור המשחק (ה-Canvas) ב-CSS Pixels. */
+/** Dimensions of the game area (the Canvas) in CSS Pixels. */
 export interface GameBounds {
   width: number;
   height: number;
 }
 
-/** מקור: spec/ARCHITECTURE.md §12. */
+/** Source: spec/ARCHITECTURE.md §12. */
 export interface Projectile {
   id: string;
   x: number;
@@ -24,15 +24,15 @@ export interface Projectile {
   velocityX: number;
   velocityY: number;
   active: boolean;
-  /** המיקום בתחילת הפריים הנוכחי — נדרש ל-Swept Collision (Milestone 3). */
+  /** Position at the start of the current frame — needed for Swept Collision (Milestone 3). */
   prevX: number;
   prevY: number;
 }
 
-/** מקור: spec/ARCHITECTURE.md §14-15. הגודל הוא גם מדד החוזק (PRD §4.6). */
+/** Source: spec/ARCHITECTURE.md §14-15. Size also doubles as the strength measure (PRD §4.6). */
 export type EnemySize = 'small' | 'medium' | 'large';
 
-/** מקור: spec/ARCHITECTURE.md §14. */
+/** Source: spec/ARCHITECTURE.md §14. */
 export interface Enemy {
   id: string;
   size: EnemySize;
@@ -45,33 +45,36 @@ export interface Enemy {
   scoreValue: number;
   active: boolean;
   /**
-   * זמן שנותר להבזק "נפגע אך לא חוסל" (שניות), Milestone 7. גדול מ-0 מיד אחרי
-   * פגיעה שאינה מחסלת; יורד ל-0 ב-`updateEnemy`. משמש רק למשוב חזותי ב-Renderer
-   * (spec/PRD §UX — "משוב חזותי ברור כאשר Enemy סופג פגיעה גם אם לא חוסל").
+   * Time remaining on the "hit but not destroyed" flash (seconds),
+   * Milestone 7. Greater than 0 right after a non-lethal hit; decays to 0
+   * in `updateEnemy`. Used only for visual feedback in the Renderer
+   * (spec/PRD §UX — "clear visual feedback when an Enemy takes a hit even
+   * if not destroyed").
    */
   hitFlashSeconds: number;
 }
 
-/** סוג הפיצוץ — קובע איזה Sprite/גודל מצויר (Milestone 7). */
+/** The explosion's variant — determines which Sprite/size is drawn (Milestone 7). */
 export type ExplosionVariant = EnemySize | 'cannon';
 
-/** אנימציית פיצוץ קצרה (ARCHITECTURE §45). נמחקת כשה-elapsed עובר את ה-duration. */
+/** A short explosion animation (ARCHITECTURE §45). Removed once elapsed passes duration. */
 export interface Explosion {
   id: string;
   x: number;
   y: number;
-  /** רדיוס השיא — נגזר מגודל האויב שהתפוצץ. */
+  /** Peak radius — derived from the size of the enemy that was destroyed. */
   maxRadius: number;
   elapsedSeconds: number;
   durationSeconds: number;
-  /** סוג הפיצוץ — בחירת Sprite ב-Renderer (Milestone 7). */
+  /** The explosion's variant — selects the Sprite in the Renderer (Milestone 7). */
   variant: ExplosionVariant;
 }
 
 /**
- * אירוע חד-פעמי שהמנוע פולט ברגעי מפתח, לצורך אפקטי קול (Milestone 7).
- * מקור: spec/ARCHITECTURE.md §51 — המנוע אינו תלוי ב-React או ב-Audio; הוא רק
- * מכריז מה קרה, וה-Hook (`useGameEngine`) ממפה כל אירוע לקריאת `audioService`.
+ * A one-off event the engine emits at key moments, for sound effects
+ * (Milestone 7). Source: spec/ARCHITECTURE.md §51 — the engine doesn't
+ * depend on React or Audio; it only announces what happened, and the Hook
+ * (`useGameEngine`) maps each event to an `audioService` call.
  */
 export type GameEvent =
   | { type: 'shoot' }
@@ -79,8 +82,9 @@ export type GameEvent =
   | { type: 'cannon-explosion' };
 
 /**
- * מצב המשחק הכללי (ARCHITECTURE §8). `GameEngine.update()` מתפצל לפי שדה זה —
- * רק ב-`playing` רצים Spawn, תנועת אויבים ו-Collision (Milestone 4).
+ * The overall game status (ARCHITECTURE §8). `GameEngine.update()` branches
+ * on this field — Spawn, enemy movement and Collision only run in
+ * `playing` (Milestone 4).
  */
 export type GameStatus =
   | 'playing'
@@ -90,8 +94,9 @@ export type GameStatus =
   | 'lost';
 
 /**
- * טווחים בלבד — הערכים בפועל מוגרלים בתוכם בכל תחילת שלב (ARCHITECTURE §18-19).
- * הבדלת סוגי האויבים היא לפי גודל בלבד; שלוש ההסתברויות סוכמות ל-1.
+ * Ranges only — the actual values are rolled from them at the start of
+ * every level (ARCHITECTURE §18-19). Enemy types are distinguished by size
+ * alone; the three probabilities sum to 1.
  */
 export interface LevelConfig {
   level: number;
@@ -106,7 +111,7 @@ export interface LevelConfig {
   largeProbability: number;
 }
 
-/** מה שה-UI (React) צריך לדעת מהמנוע — ותו לא (ARCHITECTURE §54). */
+/** What the UI (React) needs to know from the engine — and nothing more (ARCHITECTURE §54). */
 export interface GameStats {
   score: number;
   lives: number;

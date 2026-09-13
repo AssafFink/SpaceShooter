@@ -26,7 +26,7 @@ const ROOT = path.resolve(fileURLToPath(import.meta.url), '..', '..');
 const SVG_SOURCE = path.join(ROOT, 'public', 'favicon.svg');
 const OUT_DIR = path.join(ROOT, 'public', 'icons');
 
-/** spec/DESIGN.md — רקע חלל (--color-bg). */
+/** spec/DESIGN.md — space background (--color-bg). */
 const BACKGROUND = '#0B1026';
 
 const TARGETS = [

@@ -5,16 +5,17 @@ import { SoundContext } from './soundContextValue';
 import type { SoundContextValue } from './soundContextValue';
 
 /**
- * מצב ההשתקה הגלובלי של האפליקציה — Milestone 5, persistence מ-Milestone 6.
- * מקור: spec/ARCHITECTURE.md §32 (State יחיד `soundMuted`), §33 (Sound
- * Persistence), §50 (Context כשנדרש).
+ * The app's global mute state — Milestone 5, persistence from Milestone 6.
+ * Source: spec/ARCHITECTURE.md §32 (a single `soundMuted` State), §33 (Sound
+ * Persistence), §50 (Context where needed).
  *
- * הערך ההתחלתי נטען מ-`storageService.getSoundMuted()` (ברירת מחדל: לא
- * מושתק אם אין ערך שמור/הערך פגום), ו-`toggle()` שומר את הערך החדש דרך
- * `setSoundMuted()`. Milestone 7: `useAudio` (מורכב ב-`App`) מאזין ל-`muted`
- * ומחיל אותו על `audioService` בפועל (מוזיקה + אפקטים). ה-Context נשאר מקור
- * האמת היחיד למצב ההשתקה, והרכיבים הצורכים אותו (`SoundToggle`, `GameHud`,
- * `Navigation`) לא השתנו.
+ * The initial value is loaded from `storageService.getSoundMuted()`
+ * (default: unmuted if no value is saved / the value is corrupt), and
+ * `toggle()` saves the new value via `setSoundMuted()`. Milestone 7:
+ * `useAudio` (composed in `App`) listens to `muted` and applies it to
+ * `audioService` in practice (music + effects). The Context remains the
+ * single source of truth for the mute state, and the components that
+ * consume it (`SoundToggle`, `GameHud`, `Navigation`) are unchanged.
  */
 export function SoundProvider({ children }: { children: ReactNode }) {
   const [muted, setMuted] = useState<boolean>(() => getSoundMuted());

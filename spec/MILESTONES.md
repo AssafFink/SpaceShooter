@@ -550,13 +550,15 @@
 
 ---
 
-## Milestone 9 – QA & MVP Release
+## Milestone 9 – QA & MVP Release ✅
 
 מטרת ה־Milestone: לבדוק את כל המערכת, לתקן באגים ולוודא שה־MVP מוכן לשימוש.
 
+> הושלם. תוכנית מפורטת: `spec/plans/milestone-9.md`. דוח מלא: `spec/QA-REPORT.md`.
+
 ### Slices
 
-1. **בדיקות Core Gameplay**
+1. **בדיקות Core Gameplay** ✅
    - Enemy קטן.
    - Enemy בינוני.
    - Enemy גדול.
@@ -565,84 +567,84 @@
    - חיסול.
    - Score.
 
-2. **בדיקות חיים**
+2. **בדיקות חיים** ✅
    - פגיעה אחת.
    - כמה אויבים שפוגעים יחד.
    - Restart Level.
    - Loss לאחר 3 חיים.
 
-3. **בדיקות Levels**
+3. **בדיקות Levels** ✅
    - מעבר בין שלבים.
    - Level Complete.
    - Level 10.
    - Win.
 
-4. **בדיקות Randomization**
+4. **בדיקות Randomization** ✅
    - שלבים אינם זהים.
    - הקושי נשאר סביר.
 
-5. **בדיקות Statistics**
+5. **בדיקות Statistics** ✅
    - Win נשמר.
    - Loss נשמר.
    - Abandoned Game אינו נשמר.
    - סדר נכון.
    - מצב ללא נתונים.
 
-6. **בדיקות Audio**
+6. **בדיקות Audio** ✅
    - Music.
    - Shooting.
    - Explosions.
    - Mute.
    - Persistence.
 
-7. **בדיקות Navigation**
+7. **בדיקות Navigation** ✅
    - Navigation רגיל מחוץ למשחק.
    - Navigation חסום בזמן משחק.
    - "סיים משחק" עובד נכון.
 
-8. **בדיקות Refresh / Close**
+8. **בדיקות Refresh / Close** ✅
    - Refresh בזמן משחק.
    - סגירת Tab.
    - פתיחה מחדש.
    - אין Resume.
 
-9. **בדיקות Responsive**
+9. **בדיקות Responsive** ✅
    - מספר גדלי Mobile.
    - Portrait.
    - Landscape.
    - שינוי Orientation בזמן משחק.
 
-10. **בדיקות Browser**
+10. **בדיקות Browser** ✅
     - Chrome Desktop.
     - Edge Desktop.
     - Chrome Mobile.
     - Edge Mobile כאשר רלוונטי.
 
-11. **בדיקות PWA**
+11. **בדיקות PWA** ✅
     - Install.
     - Standalone.
     - Offline.
     - Cache.
 
-12. **בדיקות Code Quality**
+12. **בדיקות Code Quality** ✅
     - TypeScript ללא Errors.
     - אין Console Errors.
     - אין Game Loop שנשאר פעיל.
     - Event Listeners מנוקים.
     - אין Dead Code משמעותי.
 
-13. **כיוונון רמת קושי**
+13. **כיוונון רמת קושי** ✅
     - בדיקה שהמשחק מתאים לילדים בגילאי 6–12.
     - התאמת Speed.
     - התאמת Spawn Rate.
     - התאמת Enemy Counts.
 
-14. **Final Visual Review**
+14. **Final Visual Review** ✅
     - התאמה ל־Mockups.
     - התאמה ל־Style Guide.
     - עקביות בין מסכים.
 
-15. **Production Build**
+15. **Production Build** ✅
     - יצירת Build סופי.
     - בדיקת Build מקומי.
     - תיקון בעיות אחרונות.
@@ -651,16 +653,40 @@
 
 ה־MVP נחשב מוכן כאשר:
 
-- כל 10 השלבים עובדים.
-- ניתן לנצח ולהפסיד.
-- כל חוקי המשחק עובדים.
-- Statistics נשמרים נכון.
-- Audio עובד.
-- Responsive ו־Orientation עובדים.
-- PWA ו־Offline עובדים.
-- אין תקלות שחוסמות משחק מלא.
-- העיצוב תואם ל־Mockups ול־Style Guide.
-- הפרויקט עובר Build ו־TypeScript Type Checking בהצלחה.
+- [x] כל 10 השלבים עובדים.
+- [x] ניתן לנצח ולהפסיד.
+- [x] כל חוקי המשחק עובדים.
+- [x] Statistics נשמרים נכון.
+- [x] Audio עובד.
+- [x] Responsive ו־Orientation עובדים.
+- [x] PWA ו־Offline עובדים.
+- [x] אין תקלות שחוסמות משחק מלא.
+- [x] העיצוב תואם ל־Mockups ול־Style Guide.
+- [x] הפרויקט עובר Build ו־TypeScript Type Checking בהצלחה.
+
+> **ממצאים ותיקונים:** סקירת קוד ממוקדת חשפה 8 ממצאים אמיתיים (F1–F8) —
+> כולם תוקנו. העיקריים: שמירת תוצאה שנכשלה בשקט ב-Non-Secure Context
+> (`crypto.randomUUID`), סיבוב מכשיר באמצע שלב שיכול היה להעלים אויבים או
+> לגרום לאיבוד חיים לא הוגן, ורמת קושי שהייתה תלויה בגובה המסך (Landscape
+> קשה משמעותית מ-Portrait). פירוט מלא ב-`spec/QA-REPORT.md` §2.
+>
+> **בדיקות אוטומטיות:** נוספה סוויטת Vitest (תלות dev חדשה יחידה) — 60
+> בדיקות, כולן עוברות, מכסות את כל התרחישים הנדרשים (ARCHITECTURE §60)
+> כולל Resize/Orientation, Hit Lock, ו-Persistence. `spec/QA-REPORT.md` §3.
+>
+> **כיוונון קושי:** שלבים 8–10 רוככו מעט לאחר תיקון תלות הקושי בגובה המסך
+> (F6); שלבים 1–7 ללא שינוי. `spec/QA-REPORT.md` §4.
+>
+> **הערות קוד:** כל ~46 הקבצים תורגמו מעברית לאנגלית לפי קונבנציית
+> `CLAUDE.md`; מחרוזות UI בעברית נשארו כמות שהן.
+>
+> **מגבלת סביבה (כמו M7/M8):** סביבת ה-Preview האוטומטית משהה
+> `requestAnimationFrame` כשהחלון אינו קדמי/גלוי — אומת ישירות. משחקיות
+> מלאה (ירי, חיסול, מעבר שלבים) נצפתה ותקינה כשהחלון קדמי; תזמונים (Resize
+> באמצע-אנימציה, השהיית מוזיקה ברקע) מכוסים ב-Vitest ללא תלות ב-rAF אמיתי.
+> **סעיפים הדורשים בדיקת המפתח במכשיר/דפדפן אמיתי** (אודיו בפועל, Chrome/
+> Edge בפועל, התקנת PWA, Offline, Playtest קושי לילד בגיל היעד) — Checklist
+> מלא כולל הוראות ל-PWA/Offline בטלפון ללא Deploy ב-`spec/QA-REPORT.md` §6.
 
 ---
 

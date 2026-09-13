@@ -5,13 +5,13 @@ import type { Enemy, Explosion, ExplosionVariant } from '../types/game';
 const { explosion: config } = GAME_CONFIG;
 
 /**
- * יצירה ועדכון של אנימציות פיצוץ קצרות — פונקציות טהורות, ללא State פנימי.
- * מקור: spec/ARCHITECTURE.md §45.
+ * Creation and update of short explosion animations — pure functions, no
+ * internal state. Source: spec/ARCHITECTURE.md §45.
  *
- * וקטורי בלבד ב-Milestone 3 — Sprite Sheet / Assets אמיתיים מגיעים ב-Milestone 7.
+ * Vector-only in Milestone 3 — real Sprite Sheet / assets arrive in Milestone 7.
  */
 
-/** יוצר פיצוץ במיקום אויב שחוסל, בגודל יחסי לגודל האויב. */
+/** Creates an explosion at a destroyed enemy's position, sized relative to the enemy. */
 export function createExplosion(id: string, enemy: Enemy): Explosion {
   return createExplosionAt(
     id,
@@ -24,8 +24,9 @@ export function createExplosion(id: string, enemy: Enemy): Explosion {
 }
 
 /**
- * יוצר פיצוץ במיקום ורדיוס נתונים — משמש גם את פיצוץ התותח (ARCHITECTURE §21,
- * §45; Milestone 4), ולא רק חיסול אויב. `variant` קובע את ה-Sprite/הצבע ב-Renderer.
+ * Creates an explosion at a given position and radius — also used for the
+ * cannon explosion (ARCHITECTURE §21, §45; Milestone 4), not just enemy
+ * kills. `variant` selects the Sprite/color in the Renderer.
  */
 export function createExplosionAt(
   id: string,
@@ -38,12 +39,12 @@ export function createExplosionAt(
   return { id, x, y, maxRadius, elapsedSeconds: 0, durationSeconds, variant };
 }
 
-/** מקדם את זמן הפיצוץ (ARCHITECTURE §7). */
+/** Advances the explosion's elapsed time (ARCHITECTURE §7). */
 export function updateExplosion(explosion: Explosion, deltaSeconds: number): void {
   explosion.elapsedSeconds += deltaSeconds;
 }
 
-/** האם האנימציה הסתיימה ואפשר להסיר את הפיצוץ. */
+/** Whether the animation has finished and the explosion can be removed. */
 export function isExplosionFinished(explosion: Explosion): boolean {
   return explosion.elapsedSeconds >= explosion.durationSeconds;
 }

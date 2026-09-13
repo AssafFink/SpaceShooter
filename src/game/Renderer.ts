@@ -45,7 +45,7 @@ interface Star {
   alpha: number;
 }
 
-/** יוצר מערך כוכבים סטטי חדש, מפוזר על פני מידות אזור המשחק הנתונות. */
+/** Creates a new static array of stars, scattered across the given game-area dimensions. */
 export function createStars(bounds: GameBounds): Star[] {
   const stars: Star[] = [];
   for (let i = 0; i < bgConfig.starCount; i++) {
@@ -62,11 +62,11 @@ export function createStars(bounds: GameBounds): Star[] {
 }
 
 /**
- * כל הציור לאזור המשחק — רקע, כוכבים, תותח, קליעים.
- * מקור: spec/ARCHITECTURE.md §6, §44.
+ * All drawing for the game area — background, stars, cannon, projectiles.
+ * Source: spec/ARCHITECTURE.md §6, §44.
  *
- * אין כאן State פנימי מעבר למה שמועבר כפרמטר — כך שהוספת drawEnemies() וכו'
- * ב-Milestone 3 לא תדרוש שינוי בחתימות הקיימות.
+ * No internal State beyond what's passed as a parameter — so adding
+ * drawEnemies() etc. in Milestone 3 required no change to the existing signatures.
  */
 export class Renderer {
   private readonly ctx: CanvasRenderingContext2D;
@@ -76,9 +76,10 @@ export class Renderer {
   }
 
   /**
-   * מצייר Sprite ממורכז ב-(cx, cy) בגובה `targetHeight` (שומר יחס רוחב/גובה),
-   * מסובב ב-`angle` רדיאנים (ברירת מחדל 0). מחזיר `false` אם ה-Sprite עדיין
-   * לא מוכן — כדי שהקורא יפול חזרה לציור הווקטורי (Sprite-first, Vector-fallback).
+   * Draws a Sprite centered at (cx, cy) at `targetHeight` (preserving
+   * aspect ratio), rotated by `angle` radians (default 0). Returns `false`
+   * if the Sprite isn't ready yet — so the caller falls back to vector
+   * drawing (Sprite-first, Vector-fallback).
    */
   private drawSpriteCentered(
     name: SpriteName,
@@ -121,18 +122,19 @@ export class Renderer {
     const { ctx } = this;
     const { width, height } = cannonConfig;
 
-    // Sprite-first: התותח הגזור מ-style-guide.png מצויר "עומד" (קנה כלפי מעלה),
-    // ולכן אותה נוסחת סיבוב של הווקטור (angle + π/2) מיישרת אותו לכיוון הכיוונון.
+    // Sprite-first: the cannon cut from style-guide.png is drawn "upright"
+    // (barrel pointing up), so the same vector rotation formula (angle + π/2)
+    // aligns it with the aim direction.
     if (this.drawSpriteCentered('cannon', cannon.x, cannon.y, height * 1.2, cannon.angle + Math.PI / 2)) {
       return;
     }
 
     ctx.save();
     ctx.translate(cannon.x, cannon.y);
-    // הספרייט מצויר "עומד" כלפי מעלה; angle = -π/2 פירושו ללא סיבוב נוסף.
+    // The sprite is drawn "upright"; angle = -π/2 means no additional rotation.
     ctx.rotate(cannon.angle + Math.PI / 2);
 
-    // גוף התותח — משולש עתידני עם Glow סגול (DESIGN.md: "תותח לייזר עתידני").
+    // Cannon body — a futuristic triangle with a purple Glow (DESIGN.md: "futuristic laser cannon").
     ctx.shadowColor = colors.cannonAccent;
     ctx.shadowBlur = 12;
     ctx.fillStyle = colors.cannonBody;
@@ -143,8 +145,9 @@ export class Renderer {
     ctx.closePath();
     ctx.fill();
 
-    // קנה התותח — פס טורקיז מגוף התותח ועד נקודת יציאת הקליע (muzzleOffset
-    // נמדד מהמרכז; ה-rotate() כבר יישר את "מעלה" המקומי לכיוון הכיוונון האמיתי).
+    // Cannon barrel — a turquoise bar from the body to the muzzle exit point
+    // (muzzleOffset is measured from the center; rotate() already aligned
+    // local "up" with the real aim direction).
     const barrelWidth = 8;
     const barrelLength = cannonConfig.muzzleOffset - height / 2;
     ctx.shadowBlur = 8;
@@ -156,9 +159,10 @@ export class Renderer {
   }
 
   /**
-   * מצייר יצור חלל מצחיק וידידותי: כיפה עגולה + "רגליים" מסולסלות + שתי עיניים.
-   * מקור: spec/DESIGN.md ("יצורי חלל מצחיקים וצבעוניים"), ARCHITECTURE §43.
-   * שלושת הסוגים חולקים את אותה פונקציית ציור — נבדלים בגודל ובצבע בלבד (§15).
+   * Draws a friendly, funny space creature: a round dome + curly "legs" +
+   * two eyes. Source: spec/DESIGN.md ("funny, colorful space creatures"),
+   * ARCHITECTURE §43. All three sizes share the same draw function — they
+   * differ only in size and color (§15).
    */
   drawEnemies(enemies: readonly Enemy[]): void {
     const { ctx } = this;
@@ -170,13 +174,15 @@ export class Renderer {
           ? enemy.hitFlashSeconds / GAME_CONFIG.enemy.hitFlashDurationSeconds
           : 0;
 
-      // Sprite-first: היצור הגזור מ-style-guide.png. הגובה המצויר יחסי לרדיוס
-      // כדי שהתחושה החזותית תתאים לרדיוס הפגיעה (Milestone 7).
+      // Sprite-first: the creature cut from style-guide.png. The drawn
+      // height is relative to the radius so the visual size matches the
+      // hit radius (Milestone 7).
       const spriteHeight = radius * 2.5;
       if (this.drawSpriteCentered(ENEMY_SPRITE[enemy.size], enemy.x, enemy.y, spriteHeight)) {
         if (flashAlpha > 0) {
-          // הבזק "נפגע אך לא חוסל": ציור חוזר של אותו Sprite ב-lighter מבהיר
-          // אותו לעבר לבן, בלי לצייר צורה נוספת (spec/PRD §UX).
+          // "Hit but not destroyed" flash: redraw the same Sprite with
+          // 'lighter' to brighten it toward white, without drawing an extra
+          // shape (spec/PRD §UX).
           ctx.save();
           ctx.globalCompositeOperation = 'lighter';
           ctx.globalAlpha = flashAlpha * 0.85;
@@ -186,13 +192,13 @@ export class Renderer {
         continue;
       }
 
-      // --- Fallback ווקטורי (אם ה-Sprite לא נטען) ---
+      // --- Vector fallback (if the Sprite hasn't loaded) ---
       const bodyColor = ENEMY_BODY_COLOR[enemy.size];
 
       ctx.save();
       ctx.translate(enemy.x, enemy.y);
 
-      // רגליים מסולסלות מתחת לגוף — נותנות אופי של יצור ולא של כדור.
+      // Curly legs under the body — give it the character of a creature, not a ball.
       ctx.strokeStyle = bodyColor;
       ctx.lineWidth = Math.max(2, radius * 0.15);
       ctx.lineCap = 'round';
@@ -205,7 +211,7 @@ export class Renderer {
         ctx.stroke();
       }
 
-      // גוף — כיפה עגולה עם Glow עדין בצבע הסוג.
+      // Body — a round dome with a soft Glow in the type's color.
       ctx.shadowColor = bodyColor;
       ctx.shadowBlur = 10;
       ctx.fillStyle = bodyColor;
@@ -214,7 +220,7 @@ export class Renderer {
       ctx.fill();
       ctx.shadowBlur = 0;
 
-      // שתי עיניים גדולות וידידותיות עם ברק.
+      // Two big, friendly eyes with a highlight.
       const eyeOffsetX = radius * 0.4;
       const eyeOffsetY = radius * -0.1;
       const eyeRadius = radius * 0.3;
@@ -236,7 +242,7 @@ export class Renderer {
         ctx.fill();
       }
 
-      // הבזק "נפגע אך לא חוסל" גם ב-Fallback הווקטורי.
+      // "Hit but not destroyed" flash on the vector fallback too.
       if (flashAlpha > 0) {
         ctx.globalCompositeOperation = 'lighter';
         ctx.globalAlpha = flashAlpha * 0.7;
@@ -253,8 +259,8 @@ export class Renderer {
   }
 
   /**
-   * מצייר אנימציית פיצוץ: טבעת מתרחבת + גרעין דוהה + ניצוצות מתפזרים.
-   * מקור: spec/ARCHITECTURE.md §45.
+   * Draws the explosion animation: an expanding ring + a fading core +
+   * scattering sparks. Source: spec/ARCHITECTURE.md §45.
    */
   drawExplosions(explosions: readonly Explosion[]): void {
     const { ctx } = this;
@@ -262,8 +268,9 @@ export class Renderer {
     for (const explosion of explosions) {
       const progress = Math.min(1, explosion.elapsedSeconds / explosion.durationSeconds);
 
-      // Sprite-first: תמונת פיצוץ בודדת מ-style-guide.png, מונפשת ע"י גדילה
-      // (scale) ודהייה (alpha) לאורך חיי הפיצוץ (ARCHITECTURE §45 — single still).
+      // Sprite-first: a single explosion image from style-guide.png,
+      // animated by growing (scale) and fading (alpha) over the explosion's
+      // lifetime (ARCHITECTURE §45 — single still).
       if (isReady(EXPLOSION_SPRITE[explosion.variant])) {
         const diameter = explosion.maxRadius * 2 * (0.55 + progress * 0.75);
         ctx.save();
@@ -273,7 +280,7 @@ export class Renderer {
         continue;
       }
 
-      // --- Fallback ווקטורי ---
+      // --- Vector fallback ---
       const radius = explosion.maxRadius * progress;
       const alpha = 1 - progress;
 
@@ -281,20 +288,20 @@ export class Renderer {
       ctx.translate(explosion.x, explosion.y);
       ctx.globalAlpha = alpha;
 
-      // גרעין דוהה במרכז.
+      // Fading core at the center.
       ctx.fillStyle = colors.explosionCore;
       ctx.beginPath();
       ctx.arc(0, 0, explosion.maxRadius * 0.35 * (1 - progress * 0.6), 0, Math.PI * 2);
       ctx.fill();
 
-      // טבעת מתרחבת.
+      // Expanding ring.
       ctx.strokeStyle = colors.explosionRing;
       ctx.lineWidth = explosionConfig.ringWidth;
       ctx.beginPath();
       ctx.arc(0, 0, radius, 0, Math.PI * 2);
       ctx.stroke();
 
-      // ניצוצות מתפזרים — זווית קבועה לפי אינדקס כדי שלא "ירצדו" בין פריימים.
+      // Scattering sparks — a fixed angle per index so they don't "flicker" between frames.
       ctx.fillStyle = colors.explosionSpark;
       for (let i = 0; i < explosionConfig.sparkCount; i++) {
         const angle = (Math.PI * 2 * i) / explosionConfig.sparkCount;
@@ -316,8 +323,9 @@ export class Renderer {
     const { radius, trailLength } = GAME_CONFIG.projectile;
 
     for (const projectile of projectiles) {
-      // Sprite-first: הבולט הגזור מ-style-guide.png, מסובב לכיוון התנועה
-      // (הספרייט מצויר אנכית → up=-y → סיבוב ב-angle + π/2, כמו התותח).
+      // Sprite-first: the bolt cut from style-guide.png, rotated toward the
+      // direction of travel (the sprite is drawn vertically → up=-y →
+      // rotation by angle + π/2, same as the cannon).
       if (isReady('laser')) {
         const angle = Math.atan2(projectile.velocityY, projectile.velocityX) + Math.PI / 2;
         this.drawSpriteCentered('laser', projectile.x, projectile.y, trailLength + radius * 3, angle);

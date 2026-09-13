@@ -27,4 +27,20 @@ export function useAudio(): void {
     window.addEventListener('pointerdown', unlock, { once: true });
     return () => window.removeEventListener('pointerdown', unlock);
   }, []);
+
+  // Suspend synthesized audio while the tab/PWA is backgrounded (screen
+  // locked, app switched away) — otherwise background music keeps playing
+  // even though the game itself is frozen (rAF paused). Milestone 9,
+  // spec/plans/milestone-9.md §1 (F7).
+  useEffect(() => {
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        audioService.suspend();
+      } else {
+        audioService.resume();
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
 }

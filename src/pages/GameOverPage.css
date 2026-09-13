@@ -9,14 +9,14 @@
 .game-over-page__icon {
   font-size: 4.5rem;
   line-height: 1;
-  /* Milestone 7: כניסה קופצת של אייקון התוצאה. */
+  /* Milestone 7: the result icon's pop-in entrance. */
   animation: pop-in 0.4s ease-out both;
 }
 
 .game-over-page__result,
 .game-over-page__stats,
 .game-over-page__new-game {
-  /* כניסה מדורגת עדינה של שאר הרכיבים. */
+  /* A subtle staggered entrance for the rest of the elements. */
   animation: rise-in 0.45s ease-out both;
 }
 

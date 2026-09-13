@@ -1,10 +1,10 @@
 import { GAME_CONFIG } from './gameConfig';
 
 /**
- * Game Loop גנרי מבוסס requestAnimationFrame + Delta Time.
- * מקור: spec/ARCHITECTURE.md §7.
+ * Generic Game Loop based on requestAnimationFrame + Delta Time.
+ * Source: spec/ARCHITECTURE.md §7.
  *
- * לא תלוי ב-React ולא ב-Canvas — מחלקה טהורה שמפעילה callback בכל Frame.
+ * Not dependent on React or Canvas — a pure class that fires a callback on every Frame.
  */
 export class GameLoop {
   private readonly onFrame: (deltaSeconds: number) => void;
@@ -42,7 +42,7 @@ export class GameLoop {
 
     this.onFrame(deltaSeconds);
 
-    // ייתכן שה-callback עצר את הלולאה (stop()) — לא לתזמן Frame נוסף במקרה כזה.
+    // The callback may have stopped the loop (stop()) — don't schedule another Frame if so.
     if (this.frameId !== null) {
       this.frameId = requestAnimationFrame(this.tick);
     }

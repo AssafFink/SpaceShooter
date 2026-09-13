@@ -18,7 +18,7 @@
   color: var(--color-accent-yellow);
   box-shadow: var(--shadow-panel), 0 0 24px rgba(255, 200, 61, 0.35);
   text-align: center;
-  /* Milestone 7: כניסה קופצת + זוהר עדין מתנשם. */
+  /* Milestone 7: pop-in entrance + a soft breathing glow. */
   animation:
     pop-in var(--transition-base) ease-out,
     level-complete-glow 1.2s ease-in-out infinite alternate 0.25s;

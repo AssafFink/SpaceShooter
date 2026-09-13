@@ -45,6 +45,8 @@
 
 
 ## פקודות
-> למלא לאחר שהפרויקט מוקם (Claude יכול לייצר אותן).
-- **הרצה (dev):** `<command>`
-- **בדיקות (test):** `<command>`
+- **הרצה (dev):** `npm run dev`
+- **בדיקות (test):** `npm test`
+- **Build (production):** `npm run build`
+- **תצוגה מקדימה של ה-Build (preview):** `npm run preview`
+- **Lint:** `npm run lint`

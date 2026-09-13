@@ -31,12 +31,13 @@ function HudStat({ icon, label, value, className }: HudStatProps) {
 }
 
 /**
- * HUD של מסך המשחק — spec/PRD.md §4.3, spec/ARCHITECTURE.md §41,
- * spec/DESIGN.md (Mockup "משחק"). Milestone 5: כרטיסי HUD מעוצבים + Sound
- * Toggle (אותו `SoundContext` המשותף עם ה-Navigation).
+ * HUD for the game screen — spec/PRD.md §4.3, spec/ARCHITECTURE.md §41,
+ * spec/DESIGN.md (Mockup "Game"). Milestone 5: styled HUD cards + Sound
+ * Toggle (the same `SoundContext` shared with Navigation).
  *
- * ארבעת הפריטים מוזנים מהמנוע (GameEngine דרך useGameEngine) ומתעדכנים
- * בזמן אמת. אינו מסתיר חלק משמעותי מאזור המשחק (ARCHITECTURE §41).
+ * The four stats are fed from the engine (GameEngine via useGameEngine) and
+ * update in real time. Doesn't hide a significant part of the game area
+ * (ARCHITECTURE §41).
  */
 export function GameHud({ score, lives, currentLevel, enemiesRemaining }: GameHudProps) {
   return (

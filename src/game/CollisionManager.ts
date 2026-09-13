@@ -3,12 +3,12 @@ import type { Enemy, Projectile, Vector2 } from '../types/game';
 
 /**
  * Collision Detection — Milestone 3+4.
- * מקור: spec/ARCHITECTURE.md §13 (Projectile↔Enemy), §21 (Enemy↔Cannon), PRD §4.5.
+ * Source: spec/ARCHITECTURE.md §13 (Projectile↔Enemy), §21 (Enemy↔Cannon), PRD §4.5.
  *
- * Projectile↔Enemy משתמש ב-Swept Collision (קטע מול מעגל) ולא בבדיקת מרחק
- * נקודתית: קליע נע עד ~45px בפריים אחד (900px/s * maxDeltaSeconds), יותר
- * מקוטר אויב קטן (30px) — בדיקה נקודתית הייתה מפספסת פגיעות. ראו
- * spec/plans/milestone-3.md §3.3.
+ * Projectile↔Enemy uses Swept Collision (segment vs. circle) instead of a
+ * point-distance check: a projectile moves up to ~45px in a single frame
+ * (900px/s * maxDeltaSeconds), more than a small enemy's diameter (30px) —
+ * a point check would miss hits. See spec/plans/milestone-3.md §3.3.
  */
 
 export interface ProjectileHit {
@@ -16,7 +16,7 @@ export interface ProjectileHit {
   enemy: Enemy;
 }
 
-/** המרחק בין נקודה P לבין הקטע A-B, וה-t (0..1) של הנקודה הקרובה ביותר על הקטע. */
+/** Distance from point P to segment A-B, and t (0..1) of the closest point on the segment. */
 function distanceToSegment(
   px: number,
   py: number,
@@ -40,8 +40,9 @@ function distanceToSegment(
 }
 
 /**
- * לכל קליע פעיל — מוצא את האויב הראשון במסלולו בפריים הנוכחי (PRD §4.5:
- * "הקליע פוגע באויב הראשון שבו הוא נתקל ונעלם"). קליע פוגע לכל היותר באויב אחד.
+ * For each active projectile — finds the first enemy in its path this frame
+ * (PRD §4.5: "the projectile hits the first enemy it encounters and
+ * disappears"). A projectile hits at most one enemy.
  */
 export function detectProjectileHits(
   projectiles: readonly Projectile[],
@@ -80,9 +81,9 @@ export function detectProjectileHits(
 }
 
 /**
- * האם אויב פעיל כלשהו נוגע באזור הפגיעה של התותח (ARCHITECTURE §21).
- * מספיק מגע אחד — Hit Lock (ה-status `player-hit`) מוריד חיים אחד בלבד
- * ללא קשר לכמות האויבים שמגיעים כמעט בו-זמנית (PRD §4.8).
+ * Whether any active enemy is touching the cannon's hit area (ARCHITECTURE §21).
+ * A single touch is enough — the Hit Lock (the `player-hit` status) removes
+ * exactly one life regardless of how many enemies arrive almost at once (PRD §4.8).
  */
 export function detectCannonHit(
   enemies: readonly Enemy[],

@@ -1,19 +1,19 @@
 /* ===========================================================
    Space Shooter — Design Tokens (CSS Variables)
-   מקור: spec/DESIGN.md — חלק 2: Style Guide
+   Source: spec/DESIGN.md — Part 2: Style Guide
    =========================================================== */
 :root {
   /* --- Colors --- */
-  --color-primary: #00e5ff; /* כפתורים ראשיים, קישורים */
-  --color-bg: #0b1026; /* רקע חלל */
-  --color-bg-panel: #1a1f3d; /* רקע משני / Panels / Cards */
-  --color-text: #f8faff; /* טקסט ראשי */
+  --color-primary: #00e5ff; /* primary buttons, links */
+  --color-bg: #0b1026; /* space background */
+  --color-bg-panel: #1a1f3d; /* secondary background / Panels / Cards */
+  --color-text: #f8faff; /* main text */
   --color-accent-purple: #9b5cff;
-  --color-accent-yellow: #ffc83d; /* ניקוד / הדגשה */
-  --color-danger: #ff4d6d; /* שגיאה / סכנה / כפתור "סיים משחק" */
-  --color-success: #4cd964; /* הצלחה / "התחל" */
+  --color-accent-yellow: #ffc83d; /* score / highlight */
+  --color-danger: #ff4d6d; /* error / danger / "End Game" button */
+  --color-success: #4cd964; /* success / "Start" */
 
-  /* גוונים נגזרים לשימוש כללי (borders, overlays) */
+  /* Derived tones for general use (borders, overlays) */
   --color-border: rgba(0, 229, 255, 0.25);
   --color-border-strong: rgba(155, 92, 255, 0.4);
   --color-text-muted: rgba(248, 250, 255, 0.7);
@@ -37,7 +37,7 @@
   --spacing-xl: 2rem;
   --spacing-2xl: 3rem;
 
-  /* --- Radius (פינות מעוגלות מאוד) --- */
+  /* --- Radius (very rounded corners) --- */
   --radius-md: 1rem;
   --radius-lg: 1.5rem;
   --radius-pill: 999px;

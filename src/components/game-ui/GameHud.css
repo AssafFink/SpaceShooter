@@ -65,8 +65,8 @@
   flex-shrink: 0;
 }
 
-/* Milestone 8: Landscape נמוך — HUD קומפקטי (אייקון+ערך בלבד, ללא Label)
-   כדי לחסוך גובה (spec/plans/milestone-8.md §1.3, ARCHITECTURE §41). */
+/* Milestone 8: short Landscape — a compact HUD (icon+value only, no Label)
+   to save height (spec/plans/milestone-8.md §1.3, ARCHITECTURE §41). */
 @media (orientation: landscape) and (max-height: 500px) {
   .game-hud__stat {
     padding: var(--spacing-xs);

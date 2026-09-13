@@ -5,9 +5,10 @@ import cannonUrl from '../assets/images/cannon.png';
 import './HomePage.css';
 
 /**
- * מסך ראשי — spec/PRD.md §4.1, spec/DESIGN.md (Mockup "ראשי").
- * Milestone 7: רקע החלל הגזור מ-style-guide.png כ-backdrop עדין, ספרייט התותח
- * האמיתי (במקום ה-Placeholder הקודם), וכפתור "התחל" גדול שמתחיל מיד משחק חדש.
+ * Home screen — spec/PRD.md §4.1, spec/DESIGN.md (Mockup "Home").
+ * Milestone 7: the space background cut from style-guide.png as a subtle
+ * backdrop, the real cannon sprite (instead of the earlier Placeholder), and
+ * a large "Start" button that immediately begins a new game.
  */
 export function HomePage() {
   return (

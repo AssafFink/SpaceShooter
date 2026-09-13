@@ -160,6 +160,21 @@ export const audioService = {
     if (!muted) startMusic();
   },
 
+  /**
+   * Suspends the AudioContext (e.g. tab/app moved to the background) so
+   * synthesized music doesn't keep playing while the game itself is frozen
+   * (rAF is paused). No-op if audio was never unlocked. Milestone 9,
+   * spec/plans/milestone-9.md §1 (F7).
+   */
+  suspend(): void {
+    if (ctx && ctx.state === 'running') void ctx.suspend();
+  },
+
+  /** Resumes the AudioContext after it was suspended by `suspend()`. */
+  resume(): void {
+    if (ctx && ctx.state === 'suspended') void ctx.resume();
+  },
+
   /** Mute/unmute everything together (§32). Ramps master gain; toggles music. */
   setMuted(value: boolean): void {
     muted = value;

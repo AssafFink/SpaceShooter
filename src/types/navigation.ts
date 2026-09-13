@@ -1,6 +1,6 @@
 /**
- * נתיבי האפליקציה ופריטי תפריט הניווט.
- * מקור: spec/ARCHITECTURE.md §4 (Routing), §38 (Navigation).
+ * Application routes and navigation menu items.
+ * Source: spec/ARCHITECTURE.md §4 (Routing), §38 (Navigation).
  */
 
 export const ROUTES = {
@@ -13,18 +13,18 @@ export const ROUTES = {
 } as const;
 
 export interface NavItem {
-  /** תווית לתפריט */
+  /** Menu label */
   label: string;
-  /** נתיב הניווט */
+  /** Navigation path */
   path: string;
 }
 
 /**
- * ה-state שמועבר בניווט מ-`/game` ל-`/game-over` (Milestone 4).
- * מקור: spec/ARCHITECTURE.md §25 (Game Result), §24-25 (Win/Loss).
+ * The state passed on navigation from `/game` to `/game-over` (Milestone 4).
+ * Source: spec/ARCHITECTURE.md §25 (Game Result), §24-25 (Win/Loss).
  *
- * מועבר דרך `location.state` של React Router — לא נשמר ב-localStorage
- * (שמירת תוצאה בסטטיסטיקות היא Milestone 6).
+ * Passed via React Router's `location.state` — not saved to localStorage
+ * (saving the result to statistics is Milestone 6).
  */
 export interface GameOverState {
   result: 'win' | 'loss';
@@ -33,8 +33,8 @@ export interface GameOverState {
 }
 
 /**
- * פריטי תפריט הניווט הראשי (זמינים כאשר אין משחק פעיל).
- * ARCHITECTURE §38: ראשי, סטטיסטיקות, איך לשחק, אודות.
+ * Main navigation menu items (available when no game is active).
+ * ARCHITECTURE §38: Home, Statistics, How to Play, About.
  */
 export const NAV_ITEMS: NavItem[] = [
   { label: 'ראשי', path: ROUTES.home },

@@ -6,8 +6,12 @@ import { createProjectile, updateProjectile, isOutOfBounds } from './Projectile'
 import {
   applyHit,
   clampEnemyToBounds,
+  enemySpeedScale,
+  getHitRadius,
   hasPassedBottom,
   isDestroyed,
+  pushEnemyOutsideRadius,
+  retargetEnemy,
   updateEnemy,
 } from './Enemy';
 import { EnemySpawner } from './EnemySpawner';
@@ -26,17 +30,24 @@ import type {
 } from '../types/game';
 
 /**
- * Orchestration של מנוע המשחק — Milestone 2+3+4 (עד Lives, Levels & Game Rules).
- * מקור: spec/ARCHITECTURE.md §51, §52, §8 (Game State).
+ * Orchestration of the game engine — Milestone 2+3+4 (through Lives, Levels & Game Rules).
+ * Source: spec/ARCHITECTURE.md §51, §52, §8 (Game State).
  *
- * אינו תלוי ב-React: מקבל HTMLCanvasElement בלבד ב-constructor, ואינו רושם
- * Event Listeners בעצמו (זו אחריות ה-Hook שמשתמש בו, ARCHITECTURE §53).
+ * Not dependent on React: takes only an HTMLCanvasElement in the
+ * constructor, and doesn't register Event Listeners itself (that's the
+ * responsibility of the Hook that uses it, ARCHITECTURE §53).
  *
- * `update()` הוא מכונת מצבים לפי `GameStatus` (§8): רק ב-`playing` רצים Spawn,
- * תנועת אויבים, Collision וזיהוי סיום שלב; `level-complete` ו-`player-hit` הם
- * מצבי המתנה (Timer בלבד + עדכון פיצוצים); `won`/`lost` עוצרים את הלולאה.
- * ראו spec/plans/milestone-4.md §9.
+ * `update()` is a state machine keyed on `GameStatus` (§8): Spawn, enemy
+ * movement, Collision and level-completion detection only run in `playing`;
+ * `level-complete` and `player-hit` are waiting states (Timer only + explosion
+ * updates); `won`/`lost` stop the loop. See spec/plans/milestone-4.md §9.
  */
+
+/** Clamps a level number into the valid 1..totalLevels range. */
+function clampLevel(level: number): number {
+  return Math.min(Math.max(Math.round(level), 1), GAME_CONFIG.totalLevels);
+}
+
 export class GameEngine {
   private readonly canvas: HTMLCanvasElement;
   private readonly ctx: CanvasRenderingContext2D;
@@ -56,25 +67,33 @@ export class GameEngine {
 
   private score = 0;
   private lives = GAME_CONFIG.maxLives;
-  private currentLevel = 1;
+  private currentLevel: number;
   private status: GameStatus = 'playing';
-  /** זמן שחלף מאז הכניסה למצב `level-complete` או `player-hit` (שניות). */
+  /** Time elapsed since entering `level-complete` or `player-hit` status (seconds). */
   private statusTimerSeconds = 0;
 
   private stats: GameStats = this.buildStats();
   private onStatsChange: ((stats: GameStats) => void) | null = null;
   private onGameEvent: ((event: GameEvent) => void) | null = null;
 
-  constructor(canvas: HTMLCanvasElement) {
+  /**
+   * `options.startLevel` is a **dev-only** QA hook (Milestone 9,
+   * spec/plans/milestone-9.md §3.1) that jumps a fresh game straight to a
+   * given level, so late levels (and Win) can be reached without replaying
+   * the whole game. `useGameEngine` only ever passes it under
+   * `import.meta.env.DEV`; Score/Lives always start at their normal values.
+   */
+  constructor(canvas: HTMLCanvasElement, options?: { startLevel?: number }) {
     const ctx = canvas.getContext('2d');
     if (!ctx) {
-      throw new Error('2D context לא זמין עבור ה-Canvas של המשחק');
+      throw new Error('2D context is not available for the game canvas');
     }
     this.canvas = canvas;
     this.ctx = ctx;
     this.renderer = new Renderer(ctx);
     this.loop = new GameLoop(this.onFrame);
-    this.startLevel(1);
+    this.currentLevel = clampLevel(options?.startLevel ?? 1);
+    this.startLevel(this.currentLevel);
   }
 
   start(): void {
@@ -91,20 +110,21 @@ export class GameEngine {
     this.onGameEvent = null;
   }
 
-  /** רושם callback שנקרא רק כאשר GameStats משתנה בפועל (ARCHITECTURE §54). */
+  /** Registers a callback that fires only when GameStats actually changes (ARCHITECTURE §54). */
   setOnStatsChange(callback: ((stats: GameStats) => void) | null): void {
     this.onStatsChange = callback;
   }
 
   /**
-   * רושם callback לאירועי משחק חד-פעמיים (ירי, חיסול, פיצוץ תותח) — Milestone 7.
-   * המנוע רק "מכריז"; ה-Hook הוא שממפה כל אירוע לאודיו (ARCHITECTURE §51).
+   * Registers a callback for one-off game events (shoot, kill, cannon
+   * explosion) — Milestone 7. The engine only "announces"; the Hook maps
+   * each event to audio (ARCHITECTURE §51).
    */
   setOnGameEvent(callback: ((event: GameEvent) => void) | null): void {
     this.onGameEvent = callback;
   }
 
-  /** מעדכן את מידות אזור המשחק (CSS px) ואת רזולוציית ה-Canvas בהתאם ל-DPR. */
+  /** Updates the game area's dimensions (CSS px) and the Canvas resolution per the DPR. */
   resize(cssWidth: number, cssHeight: number): void {
     if (cssWidth <= 0 || cssHeight <= 0) return;
 
@@ -113,16 +133,48 @@ export class GameEngine {
     this.canvas.height = Math.round(cssHeight * dpr);
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
+    const previousBounds = this.bounds;
     this.bounds = { width: cssWidth, height: cssHeight };
     this.cannon.setBounds(this.bounds);
     this.stars = createStars(this.bounds);
 
+    // Reposition + re-aim + re-scale the speed of active enemies to the new
+    // bounds, and drop in-flight projectiles (their target no longer makes
+    // sense). A short reset of object layout is allowed on resize
+    // (ARCHITECTURE §35, PRD §4.19). Also guarantees a resize can never cost
+    // a life or leave an enemy misaimed/off-screen (spec/plans/
+    // milestone-9.md §1, F3, F6).
+    const canReposition = previousBounds.width > 0 && previousBounds.height > 0;
+    const scaleX = canReposition ? this.bounds.width / previousBounds.width : 1;
+    const scaleY = canReposition ? this.bounds.height / previousBounds.height : 1;
+    const cannonPosition: Vector2 = { x: this.cannon.x, y: this.cannon.y };
+    const oldSpeedScale = enemySpeedScale(canReposition ? previousBounds.height : this.bounds.height);
+    const newSpeedScale = enemySpeedScale(this.bounds.height);
+    const speedFactor = oldSpeedScale > 0 ? newSpeedScale / oldSpeedScale : 1;
+
     for (const enemy of this.enemies) {
+      if (canReposition) {
+        enemy.x *= scaleX;
+        enemy.y *= scaleY;
+      }
       clampEnemyToBounds(enemy, this.bounds);
+      const currentSpeed = Math.hypot(enemy.velocityX, enemy.velocityY);
+      retargetEnemy(enemy, cannonPosition, currentSpeed * speedFactor);
+      pushEnemyOutsideRadius(
+        enemy,
+        cannonPosition,
+        GAME_CONFIG.cannon.hitRadius + getHitRadius(enemy.size) + GAME_CONFIG.enemy.resizeSafetyMargin,
+      );
     }
+
+    this.projectiles = [];
+
+    // Draw one frame immediately so the canvas is never left blank behind an
+    // open dialog while the loop is paused (spec/plans/milestone-9.md §1, F4).
+    this.render();
   }
 
-  /** קואורדינטות CSS px יחסית לאזור המשחק (ARCHITECTURE §11, §12). */
+  /** CSS px coordinates relative to the game area (ARCHITECTURE §11, §12). */
   shoot(x: number, y: number): void {
     if (this.status !== 'playing') return;
     if (this.projectiles.length >= GAME_CONFIG.projectile.maxActive) return;
@@ -153,13 +205,13 @@ export class GameEngine {
         break;
       case 'won':
       case 'lost':
-        // הלולאה נעצרה כבר ב-enterWon/enterLost; אין מה לעדכן.
+        // The loop was already stopped in enterWon/enterLost; nothing to update.
         break;
     }
     this.publishStats();
   }
 
-  /** רצף ה-Update הרגיל (ARCHITECTURE §7), מורחב בבדיקת תותח וסיום שלב. */
+  /** The normal Update sequence (ARCHITECTURE §7), extended with cannon-hit and level-completion checks. */
   private updatePlaying(deltaSeconds: number): void {
     this.cannon.update(deltaSeconds);
 
@@ -171,16 +223,17 @@ export class GameEngine {
       updateEnemy(enemy, deltaSeconds);
     }
 
-    // התנגשות אויב–תותח נבדקת לפני הסרת אויבים שחצו את התחתית (spec/plans/
-    // milestone-4.md §1 החלטה 2) — כך שאויב שמגיע לתותח מפעיל פגיעה, ולא
-    // נמחק בשקט קודם.
+    // Enemy–cannon collision is checked before removing enemies that
+    // crossed the bottom (spec/plans/milestone-4.md §1 decision 2) — so an
+    // enemy that reaches the cannon triggers a hit, rather than being
+    // silently removed first.
     if (detectCannonHit(this.enemies, cannonPosition, GAME_CONFIG.cannon.hitRadius)) {
       this.enterPlayerHit();
       return;
     }
 
     for (const enemy of this.enemies) {
-      // אויב שהחמיץ את התותח ויצא בצד — מוסר בשקט (§1 החלטה 1).
+      // An enemy that missed the cannon and exited to the side — removed silently (§1 decision 1).
       if (hasPassedBottom(enemy, this.bounds)) enemy.active = false;
     }
 
@@ -217,7 +270,7 @@ export class GameEngine {
     }
   }
 
-  /** מצב המתנה: מציגים "שלב X הושלם", מקפיאים את המשחק, ואז מתקדמים. */
+  /** Waiting state: shows "Level X complete", freezes the game, then advances. */
   private updateLevelComplete(deltaSeconds: number): void {
     this.statusTimerSeconds += deltaSeconds;
     this.updateExplosions(deltaSeconds);
@@ -228,7 +281,7 @@ export class GameEngine {
     }
   }
 
-  /** מצב המתנה: פיצוץ התותח מתנגן; אין Spawn/תנועה/Collision (Hit Lock). */
+  /** Waiting state: the cannon explosion plays; no Spawn/movement/Collision (Hit Lock). */
   private updatePlayerHit(deltaSeconds: number): void {
     this.statusTimerSeconds += deltaSeconds;
     this.updateExplosions(deltaSeconds);
@@ -249,7 +302,7 @@ export class GameEngine {
     this.explosions = this.explosions.filter((e) => !isExplosionFinished(e));
   }
 
-  /** אויב פגע בתותח: הורדת חיים אחד, פיצוץ, וכניסה ל-Hit Lock (ARCHITECTURE §21). */
+  /** An enemy hit the cannon: lose one life, explode, and enter Hit Lock (ARCHITECTURE §21). */
   private enterPlayerHit(): void {
     this.lives -= 1;
     const explosionId = `explosion-${this.nextExplosionId++}`;
@@ -283,9 +336,9 @@ export class GameEngine {
   }
 
   /**
-   * מנקה אויבים/קליעים/פיצוצים ומתחיל שלב נתון מההתחלה (ARCHITECTURE §22).
-   * משמש גם ב-constructor (משחק חדש) וגם במעבר/Restart שלב.
-   * אינו נוגע ב-score, lives או currentLevel.
+   * Clears enemies/projectiles/explosions and starts a given level from
+   * scratch (ARCHITECTURE §22). Used both in the constructor (new game) and
+   * on level transition/Restart. Does not touch score, lives, or currentLevel.
    */
   private startLevel(level: number): void {
     this.enemies = [];
@@ -294,7 +347,7 @@ export class GameEngine {
     this.spawner.reset(this.levels.getConfig(level));
   }
 
-  /** Restart של השלב הנוכחי אחרי פגיעה (ARCHITECTURE §22) — Score/Lives/Level נשמרים. */
+  /** Restarts the current level after a hit (ARCHITECTURE §22) — Score/Lives/Level are preserved. */
   private restartLevel(): void {
     this.startLevel(this.currentLevel);
   }
@@ -309,7 +362,7 @@ export class GameEngine {
     };
   }
 
-  /** משדר עדכון ל-UI רק כששדה השתנה בפועל — אין setState לכל Frame (ARCHITECTURE §54). */
+  /** Broadcasts an update to the UI only when a field actually changed — no setState every Frame (ARCHITECTURE §54). */
   private publishStats(): void {
     const next = this.buildStats();
     const prev = this.stats;
@@ -329,7 +382,7 @@ export class GameEngine {
   private render(): void {
     this.renderer.drawBackground(this.bounds, this.stars);
     this.renderer.drawEnemies(this.enemies);
-    // התותח "התפוצץ" — לא מציירים אותו במקביל לפיצוץ (spec/plans/milestone-4.md §6).
+    // The cannon "exploded" — don't draw it alongside the explosion (spec/plans/milestone-4.md §6).
     if (this.status !== 'player-hit') {
       this.renderer.drawCannon(this.cannon);
     }

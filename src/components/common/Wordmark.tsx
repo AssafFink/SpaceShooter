@@ -1,11 +1,13 @@
 import './Wordmark.css';
 
 /**
- * "SPACE SHOOTER" מעוצב — Milestone 5.
- * מקור: spec/DESIGN.md (Mockups: מסך ראשי + מסך אודות).
+ * Styled "SPACE SHOOTER" wordmark — Milestone 5.
+ * Source: spec/DESIGN.md (Mockups: Home screen + About screen).
  *
- * Placeholder ויזואלי מבוסס CSS (Gradient + Glow) — לא קובץ גרפיקה. שימוש
- * חוזר ב-HomePage וב-AboutPage לעקביות. החלפה באיור/לוגו אמיתי — Milestone 7.
+ * A CSS-based visual placeholder (Gradient + Glow) — not a graphic file.
+ * Reused in HomePage and AboutPage for consistency. Kept as this CSS
+ * wordmark rather than a real illustration/logo — see the Milestone 7 note
+ * in spec/MILESTONES.md (can't be cleanly cut from the starfield background).
  */
 export function Wordmark() {
   return (

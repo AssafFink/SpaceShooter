@@ -6,7 +6,7 @@
   gap: var(--spacing-xl);
 }
 
-/* Milestone 7: רקע החלל הגזור מ-style-guide.png, עדין ומעומעם מאחורי התוכן. */
+/* Milestone 7: the space background cut from style-guide.png, subtle and dimmed behind the content. */
 .home-page__backdrop {
   position: fixed;
   inset: 0;
@@ -18,7 +18,7 @@
   mask-image: radial-gradient(ellipse at center, #000 25%, transparent 78%);
 }
 
-/* Milestone 7: ספרייט התותח האמיתי + ריחוף עדין. */
+/* Milestone 7: the real cannon sprite + a subtle float animation. */
 .home-page__cannon {
   width: clamp(96px, 30vw, 150px);
   height: auto;
