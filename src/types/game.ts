@@ -44,7 +44,16 @@ export interface Enemy {
   maxHitPoints: number;
   scoreValue: number;
   active: boolean;
+  /**
+   * זמן שנותר להבזק "נפגע אך לא חוסל" (שניות), Milestone 7. גדול מ-0 מיד אחרי
+   * פגיעה שאינה מחסלת; יורד ל-0 ב-`updateEnemy`. משמש רק למשוב חזותי ב-Renderer
+   * (spec/PRD §UX — "משוב חזותי ברור כאשר Enemy סופג פגיעה גם אם לא חוסל").
+   */
+  hitFlashSeconds: number;
 }
+
+/** סוג הפיצוץ — קובע איזה Sprite/גודל מצויר (Milestone 7). */
+export type ExplosionVariant = EnemySize | 'cannon';
 
 /** אנימציית פיצוץ קצרה (ARCHITECTURE §45). נמחקת כשה-elapsed עובר את ה-duration. */
 export interface Explosion {
@@ -55,7 +64,19 @@ export interface Explosion {
   maxRadius: number;
   elapsedSeconds: number;
   durationSeconds: number;
+  /** סוג הפיצוץ — בחירת Sprite ב-Renderer (Milestone 7). */
+  variant: ExplosionVariant;
 }
+
+/**
+ * אירוע חד-פעמי שהמנוע פולט ברגעי מפתח, לצורך אפקטי קול (Milestone 7).
+ * מקור: spec/ARCHITECTURE.md §51 — המנוע אינו תלוי ב-React או ב-Audio; הוא רק
+ * מכריז מה קרה, וה-Hook (`useGameEngine`) ממפה כל אירוע לקריאת `audioService`.
+ */
+export type GameEvent =
+  | { type: 'shoot' }
+  | { type: 'enemy-destroyed'; size: EnemySize }
+  | { type: 'cannon-explosion' };
 
 /**
  * מצב המשחק הכללי (ARCHITECTURE §8). `GameEngine.update()` מתפצל לפי שדה זה —

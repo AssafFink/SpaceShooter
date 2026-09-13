@@ -1,7 +1,16 @@
 import { GAME_CONFIG } from './gameConfig';
 import { getEnemyRadius } from './Enemy';
+import { getSprite, isReady } from './sprites';
+import type { SpriteName } from './sprites';
 import type { Cannon } from './Cannon';
-import type { Enemy, EnemySize, Explosion, GameBounds, Projectile } from '../types/game';
+import type {
+  Enemy,
+  EnemySize,
+  Explosion,
+  ExplosionVariant,
+  GameBounds,
+  Projectile,
+} from '../types/game';
 
 const {
   background: bgConfig,
@@ -14,6 +23,19 @@ const ENEMY_BODY_COLOR: Record<EnemySize, string> = {
   small: colors.enemySmall,
   medium: colors.enemyMedium,
   large: colors.enemyLarge,
+};
+
+const ENEMY_SPRITE: Record<EnemySize, SpriteName> = {
+  small: 'enemy-small',
+  medium: 'enemy-medium',
+  large: 'enemy-large',
+};
+
+const EXPLOSION_SPRITE: Record<ExplosionVariant, SpriteName> = {
+  small: 'explosion-small',
+  medium: 'explosion-medium',
+  large: 'explosion-large',
+  cannon: 'explosion-cannon',
 };
 
 interface Star {
@@ -53,6 +75,33 @@ export class Renderer {
     this.ctx = ctx;
   }
 
+  /**
+   * מצייר Sprite ממורכז ב-(cx, cy) בגובה `targetHeight` (שומר יחס רוחב/גובה),
+   * מסובב ב-`angle` רדיאנים (ברירת מחדל 0). מחזיר `false` אם ה-Sprite עדיין
+   * לא מוכן — כדי שהקורא יפול חזרה לציור הווקטורי (Sprite-first, Vector-fallback).
+   */
+  private drawSpriteCentered(
+    name: SpriteName,
+    cx: number,
+    cy: number,
+    targetHeight: number,
+    angle = 0,
+  ): boolean {
+    if (!isReady(name)) return false;
+    const img = getSprite(name);
+    const scale = targetHeight / img.naturalHeight;
+    const w = img.naturalWidth * scale;
+    const h = targetHeight;
+
+    const { ctx } = this;
+    ctx.save();
+    ctx.translate(cx, cy);
+    if (angle !== 0) ctx.rotate(angle);
+    ctx.drawImage(img, -w / 2, -h / 2, w, h);
+    ctx.restore();
+    return true;
+  }
+
   drawBackground(bounds: GameBounds, stars: Star[]): void {
     const { ctx } = this;
     ctx.fillStyle = colors.background;
@@ -71,6 +120,12 @@ export class Renderer {
   drawCannon(cannon: Cannon): void {
     const { ctx } = this;
     const { width, height } = cannonConfig;
+
+    // Sprite-first: התותח הגזור מ-style-guide.png מצויר "עומד" (קנה כלפי מעלה),
+    // ולכן אותה נוסחת סיבוב של הווקטור (angle + π/2) מיישרת אותו לכיוון הכיוונון.
+    if (this.drawSpriteCentered('cannon', cannon.x, cannon.y, height * 1.2, cannon.angle + Math.PI / 2)) {
+      return;
+    }
 
     ctx.save();
     ctx.translate(cannon.x, cannon.y);
@@ -110,6 +165,28 @@ export class Renderer {
 
     for (const enemy of enemies) {
       const radius = getEnemyRadius(enemy.size);
+      const flashAlpha =
+        enemy.hitFlashSeconds > 0
+          ? enemy.hitFlashSeconds / GAME_CONFIG.enemy.hitFlashDurationSeconds
+          : 0;
+
+      // Sprite-first: היצור הגזור מ-style-guide.png. הגובה המצויר יחסי לרדיוס
+      // כדי שהתחושה החזותית תתאים לרדיוס הפגיעה (Milestone 7).
+      const spriteHeight = radius * 2.5;
+      if (this.drawSpriteCentered(ENEMY_SPRITE[enemy.size], enemy.x, enemy.y, spriteHeight)) {
+        if (flashAlpha > 0) {
+          // הבזק "נפגע אך לא חוסל": ציור חוזר של אותו Sprite ב-lighter מבהיר
+          // אותו לעבר לבן, בלי לצייר צורה נוספת (spec/PRD §UX).
+          ctx.save();
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.globalAlpha = flashAlpha * 0.85;
+          this.drawSpriteCentered(ENEMY_SPRITE[enemy.size], enemy.x, enemy.y, spriteHeight);
+          ctx.restore();
+        }
+        continue;
+      }
+
+      // --- Fallback ווקטורי (אם ה-Sprite לא נטען) ---
       const bodyColor = ENEMY_BODY_COLOR[enemy.size];
 
       ctx.save();
@@ -159,6 +236,18 @@ export class Renderer {
         ctx.fill();
       }
 
+      // הבזק "נפגע אך לא חוסל" גם ב-Fallback הווקטורי.
+      if (flashAlpha > 0) {
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalAlpha = flashAlpha * 0.7;
+        ctx.fillStyle = colors.star;
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = 'source-over';
+      }
+
       ctx.restore();
     }
   }
@@ -172,6 +261,19 @@ export class Renderer {
 
     for (const explosion of explosions) {
       const progress = Math.min(1, explosion.elapsedSeconds / explosion.durationSeconds);
+
+      // Sprite-first: תמונת פיצוץ בודדת מ-style-guide.png, מונפשת ע"י גדילה
+      // (scale) ודהייה (alpha) לאורך חיי הפיצוץ (ARCHITECTURE §45 — single still).
+      if (isReady(EXPLOSION_SPRITE[explosion.variant])) {
+        const diameter = explosion.maxRadius * 2 * (0.55 + progress * 0.75);
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, 1 - progress * progress);
+        this.drawSpriteCentered(EXPLOSION_SPRITE[explosion.variant], explosion.x, explosion.y, diameter);
+        ctx.restore();
+        continue;
+      }
+
+      // --- Fallback ווקטורי ---
       const radius = explosion.maxRadius * progress;
       const alpha = 1 - progress;
 
@@ -214,6 +316,14 @@ export class Renderer {
     const { radius, trailLength } = GAME_CONFIG.projectile;
 
     for (const projectile of projectiles) {
+      // Sprite-first: הבולט הגזור מ-style-guide.png, מסובב לכיוון התנועה
+      // (הספרייט מצויר אנכית → up=-y → סיבוב ב-angle + π/2, כמו התותח).
+      if (isReady('laser')) {
+        const angle = Math.atan2(projectile.velocityY, projectile.velocityX) + Math.PI / 2;
+        this.drawSpriteCentered('laser', projectile.x, projectile.y, trailLength + radius * 3, angle);
+        continue;
+      }
+
       const speed = Math.hypot(projectile.velocityX, projectile.velocityY) || 1;
       const dirX = projectile.velocityX / speed;
       const dirY = projectile.velocityY / speed;

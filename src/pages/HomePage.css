@@ -6,27 +6,33 @@
   gap: var(--spacing-xl);
 }
 
-.home-page__art {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-sm);
+/* Milestone 7: רקע החלל הגזור מ-style-guide.png, עדין ומעומעם מאחורי התוכן. */
+.home-page__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: url('../assets/images/background.png') center / cover no-repeat;
+  opacity: 0.4;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 25%, transparent 78%);
+  mask-image: radial-gradient(ellipse at center, #000 25%, transparent 78%);
 }
 
+/* Milestone 7: ספרייט התותח האמיתי + ריחוף עדין. */
 .home-page__cannon {
-  font-size: 5rem;
-  line-height: 1;
-  filter: drop-shadow(var(--glow-purple));
-  transform: rotate(180deg);
+  width: clamp(96px, 30vw, 150px);
+  height: auto;
+  filter: drop-shadow(0 0 18px rgba(155, 92, 255, 0.6));
+  animation: home-cannon-float 3s ease-in-out infinite alternate;
 }
 
-.home-page__beam {
-  width: 4px;
-  height: 3rem;
-  border-radius: var(--radius-pill);
-  background: linear-gradient(to bottom, var(--color-accent-purple), transparent);
-  box-shadow: var(--glow-purple);
+@keyframes home-cannon-float {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-8px);
+  }
 }
 
 .home-page__tagline {

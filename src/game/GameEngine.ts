@@ -18,6 +18,7 @@ import type {
   Enemy,
   Explosion,
   GameBounds,
+  GameEvent,
   GameStats,
   GameStatus,
   Projectile,
@@ -62,6 +63,7 @@ export class GameEngine {
 
   private stats: GameStats = this.buildStats();
   private onStatsChange: ((stats: GameStats) => void) | null = null;
+  private onGameEvent: ((event: GameEvent) => void) | null = null;
 
   constructor(canvas: HTMLCanvasElement) {
     const ctx = canvas.getContext('2d');
@@ -86,11 +88,20 @@ export class GameEngine {
   destroy(): void {
     this.stop();
     this.onStatsChange = null;
+    this.onGameEvent = null;
   }
 
   /** רושם callback שנקרא רק כאשר GameStats משתנה בפועל (ARCHITECTURE §54). */
   setOnStatsChange(callback: ((stats: GameStats) => void) | null): void {
     this.onStatsChange = callback;
+  }
+
+  /**
+   * רושם callback לאירועי משחק חד-פעמיים (ירי, חיסול, פיצוץ תותח) — Milestone 7.
+   * המנוע רק "מכריז"; ה-Hook הוא שממפה כל אירוע לאודיו (ARCHITECTURE §51).
+   */
+  setOnGameEvent(callback: ((event: GameEvent) => void) | null): void {
+    this.onGameEvent = callback;
   }
 
   /** מעדכן את מידות אזור המשחק (CSS px) ואת רזולוציית ה-Canvas בהתאם ל-DPR. */
@@ -121,6 +132,7 @@ export class GameEngine {
     const origin = this.cannon.getMuzzlePosition();
     const id = `proj-${this.nextProjectileId++}`;
     this.projectiles.push(createProjectile(id, origin, target));
+    this.onGameEvent?.({ type: 'shoot' });
   }
 
   private readonly onFrame = (deltaSeconds: number): void => {
@@ -188,6 +200,7 @@ export class GameEngine {
         this.score += enemy.scoreValue;
         const explosionId = `explosion-${this.nextExplosionId++}`;
         this.explosions.push(createExplosion(explosionId, enemy));
+        this.onGameEvent?.({ type: 'enemy-destroyed', size: enemy.size });
       }
     }
 
@@ -247,8 +260,10 @@ export class GameEngine {
         this.cannon.y,
         GAME_CONFIG.cannonExplosion.maxRadius,
         GAME_CONFIG.cannonExplosionDurationSeconds,
+        'cannon',
       ),
     );
+    this.onGameEvent?.({ type: 'cannon-explosion' });
     this.enterStatus('player-hit');
   }
 

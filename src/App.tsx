@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { useAudio } from './hooks/useAudio';
 import { Navigation } from './components/navigation/Navigation';
 import { AboutPage } from './pages/AboutPage';
 import { GameOverPage } from './pages/GameOverPage';
@@ -21,6 +22,10 @@ import { ROUTES } from './types/navigation';
 function App() {
   const location = useLocation();
   const isActiveGame = location.pathname === ROUTES.game;
+
+  // שכבת האודיו של האפליקציה (Milestone 7): מסנכרנת Mute עם SoundContext
+  // ומתחילה מוזיקת רקע אחרי האינטראקציה הראשונה. חוצת-מסכים, מורכבת פעם אחת.
+  useAudio();
 
   return (
     <>

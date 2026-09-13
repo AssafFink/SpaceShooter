@@ -1,22 +1,21 @@
 import { Link } from 'react-router-dom';
 import { Wordmark } from '../components/common/Wordmark';
 import { ROUTES } from '../types/navigation';
+import cannonUrl from '../assets/images/cannon.png';
 import './HomePage.css';
 
 /**
  * מסך ראשי — spec/PRD.md §4.1, spec/DESIGN.md (Mockup "ראשי").
- * Wordmark + איור תותח (Placeholder ויזואלי — Milestone 7 יחליף ב-Assets
- * אמיתיים) + כפתור "התחל" גדול שמתחיל מיד משחק חדש בשלב 1.
+ * Milestone 7: רקע החלל הגזור מ-style-guide.png כ-backdrop עדין, ספרייט התותח
+ * האמיתי (במקום ה-Placeholder הקודם), וכפתור "התחל" גדול שמתחיל מיד משחק חדש.
  */
 export function HomePage() {
   return (
     <div className="page home-page">
+      <div className="home-page__backdrop" aria-hidden="true" />
       <Wordmark />
 
-      <div className="home-page__art" aria-hidden="true">
-        <span className="home-page__cannon">🚀</span>
-        <span className="home-page__beam" />
-      </div>
+      <img className="home-page__cannon" src={cannonUrl} alt="" aria-hidden="true" />
 
       <p className="home-page__tagline">חסלו את כל האויבים והשלימו 10 שלבים!</p>
 

@@ -46,6 +46,7 @@ export function createEnemy(
     maxHitPoints: type.hitPoints,
     scoreValue: type.score,
     active: true,
+    hitFlashSeconds: 0,
   };
 }
 
@@ -53,11 +54,19 @@ export function createEnemy(
 export function updateEnemy(enemy: Enemy, deltaSeconds: number): void {
   enemy.x += enemy.velocityX * deltaSeconds;
   enemy.y += enemy.velocityY * deltaSeconds;
+  if (enemy.hitFlashSeconds > 0) {
+    enemy.hitFlashSeconds = Math.max(0, enemy.hitFlashSeconds - deltaSeconds);
+  }
 }
 
-/** מפחית Hit Point אחד. אינו משנה את `active` — זו אחריות הקורא (GameEngine). */
+/**
+ * מפחית Hit Point אחד ומדליק הבזק משוב חזותי (Milestone 7). אינו משנה את
+ * `active` — זו אחריות הקורא (GameEngine). אם הפגיעה מחסלת, האויב יוסר לפני
+ * שההבזק מצויר, כך שההבזק בפועל נראה רק על פגיעה שאינה מחסלת (spec/PRD §UX).
+ */
 export function applyHit(enemy: Enemy): void {
   enemy.hitPoints -= 1;
+  enemy.hitFlashSeconds = GAME_CONFIG.enemy.hitFlashDurationSeconds;
 }
 
 /** האם האויב הגיע ל-0 Hit Points ויש לחסל אותו. */

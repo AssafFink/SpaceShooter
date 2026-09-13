@@ -17,6 +17,14 @@
   color: var(--color-text);
 }
 
+/* Milestone 7: הגברת נוכחות ומשוב בריחוף (Desktop). */
+@media (hover: hover) {
+  .btn:hover:not(:disabled) {
+    transform: translateY(-1px) scale(1.02);
+    filter: brightness(1.08);
+  }
+}
+
 .btn:active {
   transform: scale(0.97);
 }

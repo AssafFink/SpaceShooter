@@ -16,6 +16,19 @@
   font-size: var(--font-size-h2);
   font-weight: var(--font-weight-bold);
   color: var(--color-accent-yellow);
-  box-shadow: var(--shadow-panel);
+  box-shadow: var(--shadow-panel), 0 0 24px rgba(255, 200, 61, 0.35);
   text-align: center;
+  /* Milestone 7: כניסה קופצת + זוהר עדין מתנשם. */
+  animation:
+    pop-in var(--transition-base) ease-out,
+    level-complete-glow 1.2s ease-in-out infinite alternate 0.25s;
+}
+
+@keyframes level-complete-glow {
+  from {
+    box-shadow: var(--shadow-panel), 0 0 18px rgba(255, 200, 61, 0.25);
+  }
+  to {
+    box-shadow: var(--shadow-panel), 0 0 34px rgba(255, 200, 61, 0.6);
+  }
 }

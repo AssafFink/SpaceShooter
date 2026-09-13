@@ -398,44 +398,48 @@
 
 ---
 
-## Milestone 7 – Audio & Visual Polish
+## Milestone 7 – Audio & Visual Polish ✅
 
 מטרת ה־Milestone: להפוך את המשחק מ־Prototype למוצר מלא מבחינת Audio ו־Visual Feedback.
 
+> הושלם. תוכנית מפורטת: `spec/plans/milestone-7.md`.
+> אודיו מסונתז ב-Web Audio API (ללא קבצים); נכסים גרפיים נגזרו מ-`spec/style-guide.png`
+> (`tools/extract-sprites.py` → `src/assets/images/`) עם נפילה חזרה ל-Vector Art.
+
 ### Slices
 
-1. **יצירת Audio Service**
+1. **יצירת Audio Service** ✅
    - ניהול מרכזי של כל Audio.
 
-2. **Background Music**
+2. **Background Music** ✅
    - מוזיקה דרמטית.
    - Loop.
    - פעילה בכלל האפליקציה.
 
-3. **טיפול ב־Browser Autoplay**
+3. **טיפול ב־Browser Autoplay** ✅
    - התחלת Audio לאחר User Interaction ראשון במידת הצורך.
 
-4. **Laser Sound**
+4. **Laser Sound** ✅
    - אפקט קול לכל ירייה.
 
-5. **Enemy Explosion Sound**
+5. **Enemy Explosion Sound** ✅
    - אפקט קול בחיסול Enemy.
 
-6. **Cannon Explosion Sound**
+6. **Cannon Explosion Sound** ✅
    - אפקט קול באיבוד חיים.
 
-7. **Sound Toggle**
+7. **Sound Toggle** ✅
    - השתקת כל Audio יחד.
    - Unmute של כל Audio יחד.
 
-8. **Explosion Animation**
+8. **Explosion Animation** ✅
    - אנימציה מלאה לאויבים.
    - אנימציה מלאה לתותח.
 
-9. **Visual Feedback לפגיעה**
+9. **Visual Feedback לפגיעה** ✅
    - משוב ברור כאשר Enemy סופג פגיעה גם אם לא חוסל.
 
-10. **Asset Integration**
+10. **Asset Integration** ✅
     - Cannon.
     - Enemies.
     - Background.
@@ -444,7 +448,7 @@
     - Logo.
     - Icons.
 
-11. **Polish של מעברים**
+11. **Polish של מעברים** ✅
     - Level Complete.
     - Game Over.
     - Dialogs.
@@ -452,10 +456,16 @@
 
 ### Definition of Done
 
-- כל ה־Audio פועל.
-- Mute/Unmute פועל.
-- כל Assets המרכזיים משולבים.
-- המשחק נראה ומרגיש בהתאם ל־Style Guide.
+- [x] כל ה־Audio פועל.
+- [x] Mute/Unmute פועל.
+- [x] כל Assets המרכזיים משולבים.
+- [x] המשחק נראה ומרגיש בהתאם ל־Style Guide.
+
+> הערות: (1) רקע ה-Canvas נשאר Vector Starfield (חד וסקיילבילי לכל גודל); הרקע
+> הגזור משמש כ-backdrop במסך הראשי. הלוגו נשאר `Wordmark` (CSS) — לא ניתן לגזור
+> נקי מרקע הכוכבים; שאר הנכסים נגזרו. אייקוני ה-UI נשארו אמוג'י/CSS כפי שהיו.
+> (2) אימות אנימציית ה-Game Loop ושמיעת האודיו בפועל דורשים חלון גלוי עם רמקולים
+> (rAF מושהה כשה-preview מוסתר) — לבדיקת המפתח.
 
 ---
 

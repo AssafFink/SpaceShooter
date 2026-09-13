@@ -132,3 +132,49 @@ button:focus-visible {
     padding: var(--spacing-2xl) var(--spacing-lg);
   }
 }
+
+/* ===========================================================
+   Milestone 7 — Transition polish (shared keyframes)
+   מקור: spec/MILESTONES.md M7 slice 11 (Polish של מעברים).
+   =========================================================== */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* מכבד העדפת נגישות — ללא אנימציות כניסה כאשר המשתמש ביקש תנועה מופחתת. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

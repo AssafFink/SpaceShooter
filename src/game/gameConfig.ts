@@ -65,6 +65,8 @@ export const GAME_CONFIG = {
   enemy: {
     /** תוספת סלחנות לרדיוס הפגיעה מעבר לרדיוס המצויר — משחק לילדים 6-12. */
     hitRadiusBonus: 3,
+    /** משך הבזק "נפגע אך לא חוסל" (שניות) — משוב חזותי, Milestone 7. */
+    hitFlashDurationSeconds: 0.14,
     /** שוליים מינימליים מקצה המסך במיקום ה-Spawn, ב-px. */
     spawnMarginX: 24,
     /** סטייה זוויתית מקסימלית מהקו הישר אל התותח, ברדיאנים (~9°, ARCHITECTURE §16). */
@@ -90,6 +92,40 @@ export const GAME_CONFIG = {
   },
 
   /**
+   * אודיו מסונתז ב-Web Audio API (Milestone 7) — אין קבצים חיצוניים.
+   * מקור: spec/ARCHITECTURE.md §30-33; החלטת מקור מ-spec/plans/milestone-7.md §1.1.
+   * העוצמות בטווח 0..1; ההשתקה מבוצעת דרך masterGain (§32 — אין Volume Slider
+   * ואין שליטה נפרדת מוזיקה/אפקטים ב-UI).
+   */
+  audio: {
+    masterVolume: 0.6,
+    musicVolume: 0.32,
+    sfxVolume: 0.55,
+    /** צליל ירי: Sweep יורד מהיר (ARCHITECTURE §UX — משוב מיידי). */
+    laser: { startFreq: 840, endFreq: 190, durationSeconds: 0.13 },
+    /** פיצוץ אויב: פרץ רעש דרך Lowpass; משך גדל מעט לפי גודל. */
+    enemyExplosion: {
+      filterFreq: 1500,
+      small: 0.18,
+      medium: 0.24,
+      large: 0.32,
+    },
+    /** פיצוץ תותח: פרץ רעש גדול + thump נמוך. */
+    cannonExplosion: { durationSeconds: 0.6, filterFreq: 800, thumpFreq: 72 },
+    /**
+     * מוזיקת רקע מסונתזת בלולאה (§31). ה-Scheduler ב-audioService מתזמן צעד
+     * אחד בכל stepSeconds; הרצף חוזר על עצמו. tempo צנוע ולא צורם לילדים.
+     */
+    music: {
+      stepSeconds: 0.32,
+      /** תדרי הבס (Hz), צעד אחד לכל תו — סולם מינורי, לופ קצר. */
+      bass: [55, 55, 82.41, 65.41],
+      /** ארפג'יו מעל הבס (Hz). */
+      arp: [220, 261.63, 329.63, 261.63, 220, 329.63, 392, 329.63],
+    },
+  },
+
+  /**
    * צבעים המשוכפלים מ-spec/DESIGN.md (Style Guide) — Canvas אינו יכול לצרוך
    * CSS Variables ישירות, ולכן הכפילות כאן מכוונת. מקור האמת נשאר DESIGN.md.
    */
@@ -100,9 +136,11 @@ export const GAME_CONFIG = {
     cannonAccent: '#00E5FF',
     projectile: '#FF6BFF',
     projectileGlow: '#9B5CFF',
+    // צבעי fallback תואמים ל-Sprites הגזורים מ-style-guide.png (Milestone 7):
+    // ירוק=small, ורוד=medium, צהוב=large. משמשים רק אם ה-Sprite לא נטען.
     enemySmall: '#4CD964',
-    enemyMedium: '#00E5FF',
-    enemyLarge: '#9B5CFF',
+    enemyMedium: '#FF4D6D',
+    enemyLarge: '#FFC83D',
     enemyEye: '#0B1026',
     enemyEyeSpark: '#F8FAFF',
     explosionCore: '#FFC83D',

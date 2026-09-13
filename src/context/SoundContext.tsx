@@ -11,10 +11,10 @@ import type { SoundContextValue } from './soundContextValue';
  *
  * הערך ההתחלתי נטען מ-`storageService.getSoundMuted()` (ברירת מחדל: לא
  * מושתק אם אין ערך שמור/הערך פגום), ו-`toggle()` שומר את הערך החדש דרך
- * `setSoundMuted()`. **הכנה להמשך, בלי לממש עכשיו:** Milestone 7 יוסיף
- * Audio Service שמאזין ל-`muted` ומשתיק/מפעיל בפועל מוזיקה ואפקטים. הרכיבים
- * הצורכים את ה-Context (`SoundToggle`, `GameHud`, `Navigation`) לא ישתנו
- * כאשר שכבה זו תתווסף.
+ * `setSoundMuted()`. Milestone 7: `useAudio` (מורכב ב-`App`) מאזין ל-`muted`
+ * ומחיל אותו על `audioService` בפועל (מוזיקה + אפקטים). ה-Context נשאר מקור
+ * האמת היחיד למצב ההשתקה, והרכיבים הצורכים אותו (`SoundToggle`, `GameHud`,
+ * `Navigation`) לא השתנו.
  */
 export function SoundProvider({ children }: { children: ReactNode }) {
   const [muted, setMuted] = useState<boolean>(() => getSoundMuted());

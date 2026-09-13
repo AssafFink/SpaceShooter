@@ -1,6 +1,6 @@
 import { GAME_CONFIG } from './gameConfig';
 import { getEnemyRadius } from './Enemy';
-import type { Enemy, Explosion } from '../types/game';
+import type { Enemy, Explosion, ExplosionVariant } from '../types/game';
 
 const { explosion: config } = GAME_CONFIG;
 
@@ -19,12 +19,13 @@ export function createExplosion(id: string, enemy: Enemy): Explosion {
     enemy.y,
     getEnemyRadius(enemy.size) * config.radiusMultiplier,
     config.durationSeconds,
+    enemy.size,
   );
 }
 
 /**
  * יוצר פיצוץ במיקום ורדיוס נתונים — משמש גם את פיצוץ התותח (ARCHITECTURE §21,
- * §45; Milestone 4), ולא רק חיסול אויב.
+ * §45; Milestone 4), ולא רק חיסול אויב. `variant` קובע את ה-Sprite/הצבע ב-Renderer.
  */
 export function createExplosionAt(
   id: string,
@@ -32,8 +33,9 @@ export function createExplosionAt(
   y: number,
   maxRadius: number,
   durationSeconds: number,
+  variant: ExplosionVariant,
 ): Explosion {
-  return { id, x, y, maxRadius, elapsedSeconds: 0, durationSeconds };
+  return { id, x, y, maxRadius, elapsedSeconds: 0, durationSeconds, variant };
 }
 
 /** מקדם את זמן הפיצוץ (ARCHITECTURE §7). */

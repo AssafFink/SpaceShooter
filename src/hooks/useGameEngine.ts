@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { GAME_CONFIG } from '../game/gameConfig';
 import { GameEngine } from '../game/GameEngine';
-import type { GameStats } from '../types/game';
+import { audioService } from '../services/audioService';
+import type { GameEvent, GameStats } from '../types/game';
 
 const INITIAL_STATS: GameStats = {
   score: 0,
@@ -42,6 +43,22 @@ export function useGameEngine() {
     engineRef.current = engine;
     setStats(INITIAL_STATS);
     engine.setOnStatsChange(setStats);
+
+    // אירועי המנוע → אפקטי קול. המנוע נשאר טהור (ARCHITECTURE §51); המיפוי
+    // לאודיו יושב כאן, בשכבת ה-React, בדיוק כמו setStats.
+    engine.setOnGameEvent((event: GameEvent) => {
+      switch (event.type) {
+        case 'shoot':
+          audioService.playLaser();
+          break;
+        case 'enemy-destroyed':
+          audioService.playEnemyExplosion(event.size);
+          break;
+        case 'cannon-explosion':
+          audioService.playCannonExplosion();
+          break;
+      }
+    });
 
     const resizeObserver = new ResizeObserver((entries) => {
       const entry = entries[0];
