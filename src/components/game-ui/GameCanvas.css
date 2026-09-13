@@ -14,8 +14,30 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Milestone 8: Landscape נמוך — מאפשר ל-Canvas להצטמצם כדי שהשאר (HUD,
+   כפתור) יישארו גלויים (spec/plans/milestone-8.md §1.3). */
+@media (orientation: landscape) and (max-height: 500px) {
+  .game-canvas {
+    min-height: 140px;
+  }
+}
+
 .game-canvas__el {
-  display: block;
+  /* position:absolute (לא Static) — קריטי: ל-<canvas> יש גודל אינטרינזי לפי
+     attributes ה-width/height (שה-Engine מעדכן ב-resize()). ב-Static
+     position, height:100% כנגד הורה בגובה auto נופל בחזרה לגודל האינטרינזי
+     הזה, ויוצר לולאת משוב עם ה-ResizeObserver (הגובה "נתקע" על ערך ישן/מנופח
+     — נצפה ב-Landscape, spec/plans/milestone-8.md §1.3-1.4). מיצוב מוחלט
+     מוציא את ה-canvas מזרימת ה-Layout — .game-canvas (position:relative)
+     נקבע אז אך ורק לפי Flexbox, בלי תלות הדדית בילד.
+     עדיין נדרש width/height:100% מפורש (לא di מסתמכים על inset:0 בלבד):
+     ל-Elements מוחלפים (Replaced Elements כמו canvas) עם position:absolute,
+     width/height:auto נופל לגודל האינטרינזי גם כשכל ה-inset מוגדר ל-0
+     (CSS2.1 §10.3.8/§10.6.4) — 100% הוא שמכריח את הגודל למלא את ה-Containing
+     Block בפועל. */
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+  display: block;
 }

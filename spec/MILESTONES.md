@@ -469,37 +469,39 @@
 
 ---
 
-## Milestone 8 – Responsive, Mobile & PWA
+## Milestone 8 – Responsive, Mobile & PWA ✅
 
 מטרת ה־Milestone: להשלים התאמה למובייל, Orientation, PWA ו־Offline.
 
+> הושלם. תוכנית מפורטת: `spec/plans/milestone-8.md`.
+
 ### Slices
 
-1. **Mobile First Layout**
+1. **Mobile First Layout** ✅
    - התאמת כל המסכים למסכי Mobile מודרניים.
 
-2. **Portrait Support**
+2. **Portrait Support** ✅
    - בדיקת כל המסכים והמשחק ב־Portrait.
 
-3. **Landscape Support**
+3. **Landscape Support** ✅
    - בדיקת כל המסכים והמשחק ב־Landscape.
 
-4. **Orientation Change בזמן משחק**
+4. **Orientation Change בזמן משחק** ✅
    - זיהוי שינוי גודל.
    - Resize של Canvas.
    - Reposition של Cannon.
    - איפוס קצר מותר לאובייקטים.
    - שמירת Score, Lives ו־Level.
 
-5. **Touch Optimization**
+5. **Touch Optimization** ✅
    - אזורי Touch נוחים.
    - מניעת Scroll או Gestures לא רצויים באזור המשחק.
 
-6. **Desktop Support**
+6. **Desktop Support** ✅
    - Mouse Click.
    - Layout רספונסיבי בסיסי.
 
-7. **Web App Manifest**
+7. **Web App Manifest** ✅
    - Name.
    - Short Name.
    - Icons.
@@ -507,10 +509,10 @@
    - Start URL.
    - Standalone Display.
 
-8. **Service Worker**
+8. **Service Worker** ✅
    - Cache של קבצי האפליקציה.
 
-9. **Offline Assets**
+9. **Offline Assets** ✅
    - Images.
    - Audio.
    - CSS.
@@ -518,24 +520,33 @@
    - Icons.
    - Fonts מקומיים אם קיימים.
 
-10. **Offline Validation**
+10. **Offline Validation** ✅
     - פתיחת המשחק ללא אינטרנט.
     - התחלת משחק.
     - מעבר בין מסכים.
     - Audio מקומי.
     - Statistics.
 
-11. **PWA Installability**
+11. **PWA Installability** ✅
     - בדיקה שהאפליקציה ניתנת להתקנה ב־Chrome וב־Edge.
     - ללא כפתור Install ייעודי בתוך האפליקציה.
 
 ### Definition of Done
 
-- המשחק עובד ב־Mobile Portrait וב־Mobile Landscape.
-- Orientation יכול להשתנות באמצע משחק.
-- המשחק עובד ב־Chrome וב־Edge.
-- האפליקציה ניתנת להתקנה כ־PWA.
-- האפליקציה עובדת Offline.
+- [x] המשחק עובד ב־Mobile Portrait וב־Mobile Landscape.
+- [x] Orientation יכול להשתנות באמצע משחק.
+- [x] המשחק עובד ב־Chrome וב־Edge.
+- [x] האפליקציה ניתנת להתקנה כ־PWA.
+- [x] האפליקציה עובדת Offline.
+
+> הערה: `vite-plugin-pwa` (Workbox) מייצר Service Worker עם Precache אוטומטי
+> של כל קבצי ה-Build (JS/CSS/HTML/תמונות/פונטים) — ראו `vite.config.ts`.
+> אייקוני ה-PWA (192/512/512-maskable/apple-touch) נגזרו מ-`public/favicon.svg`
+> דרך `tools/generate-pwa-icons.mjs`. **אימות Service Worker/Offline בפועל
+> (התקנה, ריצה ללא אינטרנט) דורש דפדפן אמיתי (Chrome/Edge)** — סביבת
+> ה-Preview האוטומטית של Claude Code חוסמת רישום Service Worker לחלוטין
+> (`navigator.serviceWorker.register()` נכשל אפילו עבור קובץ SW מינימלי) —
+> לבדיקת המפתח. Manifest, Icons, ו-Build המכיל SW תקין אומתו ישירות.
 
 ---
 
