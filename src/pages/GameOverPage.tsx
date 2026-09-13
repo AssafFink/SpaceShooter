@@ -4,14 +4,13 @@ import type { GameOverState } from '../types/navigation';
 import './GameOverPage.css';
 
 /**
- * מסך סיום משחק — spec/PRD.md §4.13.
+ * מסך סיום משחק — spec/PRD.md §4.13, spec/DESIGN.md (Mockup "סיום משחק").
  *
- * Milestone 4: קורא את תוצאת המשחק (win/loss, ניקוד, שלב) מ-`location.state`,
- * שמועבר מ-`GamePage` בניווט. אם המסך נפתח בלי state (למשל כניסה ישירה
- * ל-`/game-over` או Refresh) — אין תוצאה אמיתית להציג, ולכן מפנים בחזרה
- * ל-`/` (spec/plans/milestone-4.md §1 החלטה 4).
+ * קורא את תוצאת המשחק (win/loss, ניקוד, שלב) מ-`location.state`, שמועבר
+ * מ-`GamePage` בניווט. אם המסך נפתח בלי state (כניסה ישירה או Refresh) —
+ * אין תוצאה אמיתית להציג, ולכן מפנים בחזרה ל-`/`.
  *
- * עיצוב מלא לפי ה-Mockups — Milestone 5. שמירת התוצאה בסטטיסטיקות — Milestone 6.
+ * שמירת התוצאה בסטטיסטיקות — Milestone 6.
  */
 export function GameOverPage() {
   const location = useLocation();
@@ -25,7 +24,10 @@ export function GameOverPage() {
 
   return (
     <div className="page game-over-page">
-      <div className="game-over-page__icon" aria-hidden="true">
+      <div
+        className={`game-over-page__icon game-over-page__icon--${isWin ? 'win' : 'loss'}`}
+        aria-hidden="true"
+      >
         {isWin ? '🏆' : '💥'}
       </div>
       <h1
@@ -35,13 +37,13 @@ export function GameOverPage() {
       </h1>
       <div className="panel game-over-page__stats">
         <p>
-          ניקוד סופי: <strong>{state.finalScore}</strong>
+          ניקוד סופי: <strong className="game-over-page__score">{state.finalScore}</strong>
         </p>
         <p>
-          השלב שהושג: <strong>{state.levelReached}</strong>
+          השלב שהושג: <strong className="game-over-page__level">{state.levelReached}</strong>
         </p>
       </div>
-      <Link to={ROUTES.game} className="btn btn--success">
+      <Link to={ROUTES.game} className="btn btn--success game-over-page__new-game">
         משחק חדש
       </Link>
     </div>

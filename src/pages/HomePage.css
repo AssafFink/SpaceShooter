@@ -3,29 +3,38 @@
   align-items: center;
   text-align: center;
   flex: 1;
+  gap: var(--spacing-xl);
 }
 
-.home-page__logo {
+.home-page__art {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.home-page__cannon {
   font-size: 5rem;
   line-height: 1;
   filter: drop-shadow(var(--glow-purple));
+  transform: rotate(180deg);
 }
 
-.home-page__title {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent-purple));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  font-size: clamp(2rem, 8vw, 3rem);
-  margin-bottom: var(--spacing-sm);
+.home-page__beam {
+  width: 4px;
+  height: 3rem;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(to bottom, var(--color-accent-purple), transparent);
+  box-shadow: var(--glow-purple);
 }
 
 .home-page__tagline {
-  margin-bottom: var(--spacing-lg);
+  margin: 0;
 }
 
 .home-page__start {
   padding-inline: var(--spacing-2xl);
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   text-decoration: none;
 }

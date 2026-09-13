@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { Navigation } from './components/navigation/Navigation';
 import { AboutPage } from './pages/AboutPage';
 import { GameOverPage } from './pages/GameOverPage';
@@ -12,12 +12,19 @@ import { ROUTES } from './types/navigation';
  * שורש האפליקציה: App Shell (Navigation) + Routing.
  * מקור: spec/ARCHITECTURE.md §4.
  *
- * הערה: חסימת ניווט בזמן משחק פעיל (PRD §4.2) ממומשת ב-Milestone 5.
+ * חסימת ניווט בזמן משחק פעיל (PRD §4.2, ARCHITECTURE §39) — Milestone 5:
+ * ה-`Navigation` מוסתר לחלוטין בנתיב `/game` בלבד. הנתיב הזה נכנס רק דרך
+ * "התחל"/"משחק חדש" ונעזב רק דרך "סיים משחק" (→ `/`) או win/loss
+ * (→ `/game-over`) — לכן `pathname === '/game'` הוא Proxy מדויק ל"משחק פעיל".
+ * ב-`/game-over` (אינו משחק פעיל) ה-Navigation מוצג, כדי לא לכלוא את המשתמש.
  */
 function App() {
+  const location = useLocation();
+  const isActiveGame = location.pathname === ROUTES.game;
+
   return (
     <>
-      <Navigation />
+      {!isActiveGame && <Navigation />}
       <Routes>
         <Route path={ROUTES.home} element={<HomePage />} />
         <Route path={ROUTES.game} element={<GamePage />} />

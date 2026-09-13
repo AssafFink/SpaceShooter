@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { GAME_CONFIG } from '../game/gameConfig';
 import { GameEngine } from '../game/GameEngine';
 import type { GameStats } from '../types/game';
@@ -22,10 +22,15 @@ const INITIAL_STATS: GameStats = {
  * `stats` (ניקוד, חיים, שלב, אויבים שנותרו, status) מתעדכן דרך callback
  * שה-Engine קורא לו רק כשערך משתנה בפועל — אין Re-render של React בכל
  * Frame (ARCHITECTURE §54).
+ *
+ * `pause`/`resume` (Milestone 5) חושפים את `engine.stop()`/`start()` הקיימים
+ * דרך `ref` יציב — משמשים את Confirmation Dialog של "סיים משחק" (GamePage)
+ * כדי להקפיא את המשחק כל עוד ה-Dialog פתוח, בלי לגעת ב-GameEngine עצמו.
  */
 export function useGameEngine() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const engineRef = useRef<GameEngine | null>(null);
   const [stats, setStats] = useState<GameStats>(INITIAL_STATS);
 
   useEffect(() => {
@@ -34,6 +39,7 @@ export function useGameEngine() {
     if (!container || !canvas) return;
 
     const engine = new GameEngine(canvas);
+    engineRef.current = engine;
     setStats(INITIAL_STATS);
     engine.setOnStatsChange(setStats);
 
@@ -62,8 +68,12 @@ export function useGameEngine() {
       resizeObserver.disconnect();
       canvas.removeEventListener('pointerdown', handlePointerDown);
       engine.destroy();
+      engineRef.current = null;
     };
   }, []);
 
-  return { containerRef, canvasRef, stats };
+  const pause = useCallback(() => engineRef.current?.stop(), []);
+  const resume = useCallback(() => engineRef.current?.start(), []);
+
+  return { containerRef, canvasRef, stats, pause, resume };
 }

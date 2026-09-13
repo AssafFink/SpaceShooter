@@ -1,0 +1,39 @@
+.modal__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  background: var(--color-overlay);
+  backdrop-filter: blur(4px);
+}
+
+.modal__panel {
+  width: 100%;
+  max-width: 24rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  box-shadow: var(--shadow-panel), var(--glow-purple);
+}
+
+.modal__panel:focus {
+  outline: none;
+}
+
+.modal__title {
+  margin: 0;
+}
+
+.modal__actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+}
+
+.modal__actions .btn {
+  flex: 1;
+}

@@ -1,22 +1,18 @@
 .about-page {
   align-items: center;
   text-align: center;
-}
-
-.about-page__logo {
-  font-size: 4rem;
-  filter: drop-shadow(var(--glow-purple));
-}
-
-.about-page__title {
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent-purple));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  gap: var(--spacing-md);
 }
 
 .about-page__text {
   max-width: 32em;
+}
+
+.about-page__divider {
+  width: 4rem;
+  border: none;
+  border-top: 1px solid var(--color-border-strong);
+  margin: var(--spacing-sm) 0;
 }
 
 .about-page__credit {

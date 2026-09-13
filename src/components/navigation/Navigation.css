@@ -34,6 +34,12 @@
   display: none;
 }
 
+.nav__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
 .nav__link {
   color: var(--color-text);
   text-decoration: none;

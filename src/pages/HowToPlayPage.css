@@ -25,3 +25,47 @@
   font-size: 1.75rem;
   flex-shrink: 0;
 }
+
+.enemy-sizes {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-sm);
+}
+
+.enemy-sizes__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+}
+
+.enemy-sizes__icon {
+  line-height: 1;
+}
+
+.enemy-sizes__item--small .enemy-sizes__icon {
+  font-size: 1.25rem;
+}
+
+.enemy-sizes__item--medium .enemy-sizes__icon {
+  font-size: 1.75rem;
+}
+
+.enemy-sizes__item--large .enemy-sizes__icon {
+  font-size: 2.25rem;
+}
+
+.enemy-sizes__label {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-caption);
+}
+
+.enemy-sizes__hits {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}

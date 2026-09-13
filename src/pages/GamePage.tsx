@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/common/Button';
 import { GameCanvas } from '../components/game-ui/GameCanvas';
+import { ConfirmEndGameDialog } from '../components/game-ui/ConfirmEndGameDialog';
 import { GameHud } from '../components/game-ui/GameHud';
 import { LevelCompleteMessage } from '../components/game-ui/LevelCompleteMessage';
 import { useGameEngine } from '../hooks/useGameEngine';
@@ -12,15 +13,15 @@ import './GamePage.css';
 /**
  * מסך המשחק — spec/PRD.md §4.3.
  *
- * Milestone 4 (Lives, Levels & Game Rules): חיים, שלבים, Restart אחרי פגיעה,
- * הודעת "שלב X הושלם" ומעבר ל-`/game-over` עם Win/Loss אמיתיים.
- *
- * ה-Dialog "האם אתה בטוח שברצונך לסיים את המשחק?" וחסימת הניווט בזמן משחק
- * מגיעים ב-Milestone 5 — כפתור "סיים משחק" עדיין מנווט ישירות ל-`/`.
+ * Milestone 5: כפתור "סיים משחק" פותח Confirmation Dialog (PRD §4.14, Flow 7)
+ * ומקפיא את המשחק (`pause()`) כל עוד הוא פתוח — "ביטול" ממשיך (`resume()`),
+ * "אישור" מנווט ל-`/` בלי לשמור (אין localStorage כלל עדיין — M6). הניווט
+ * חסום בזמן משחק פעיל דרך הסתרת ה-Navigation ב-`App.tsx`.
  */
 export function GamePage() {
   const navigate = useNavigate();
-  const { containerRef, canvasRef, stats } = useGameEngine();
+  const { containerRef, canvasRef, stats, pause, resume } = useGameEngine();
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (stats.status !== 'won' && stats.status !== 'lost') return;
@@ -32,6 +33,21 @@ export function GamePage() {
     };
     navigate(ROUTES.gameOver, { replace: true, state });
   }, [stats.status, stats.score, stats.currentLevel, navigate]);
+
+  function requestEndGame() {
+    pause();
+    setConfirmOpen(true);
+  }
+
+  function cancelEndGame() {
+    setConfirmOpen(false);
+    resume();
+  }
+
+  function confirmEndGame() {
+    setConfirmOpen(false);
+    navigate(ROUTES.home);
+  }
 
   return (
     <div className="game-page">
@@ -49,9 +65,13 @@ export function GamePage() {
         )}
       </div>
 
-      <Button variant="danger" onClick={() => navigate(ROUTES.home)}>
+      <Button variant="danger" onClick={requestEndGame}>
         סיים משחק
       </Button>
+
+      {confirmOpen && (
+        <ConfirmEndGameDialog onCancel={cancelEndGame} onConfirm={confirmEndGame} />
+      )}
     </div>
   );
 }

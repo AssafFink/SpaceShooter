@@ -1,17 +1,66 @@
 .game-hud {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  align-items: center;
   gap: var(--spacing-sm);
   width: 100%;
   max-width: var(--max-content-width);
 }
 
-.game-hud__item {
+.game-hud__stats {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.game-hud__stat {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
   background: var(--color-bg-panel);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: var(--spacing-xs) var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-sm);
+}
+
+.game-hud__stat-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.game-hud__stat-body {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.game-hud__stat-label {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+.game-hud__stat-value {
   font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-caption);
+  font-size: var(--font-size-body);
+}
+
+.game-hud__stat--enemies .game-hud__stat-value {
+  color: var(--color-primary);
+}
+
+.game-hud__stat--level .game-hud__stat-value {
+  color: var(--color-accent-purple);
+}
+
+.game-hud__stat--lives .game-hud__stat-value {
+  color: var(--color-danger);
+}
+
+.game-hud__stat--score .game-hud__stat-value {
+  color: var(--color-accent-yellow);
+}
+
+.game-hud__sound {
+  flex-shrink: 0;
 }

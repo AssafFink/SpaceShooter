@@ -261,18 +261,20 @@
 
 ---
 
-## Milestone 5 – Complete Game UI & User Flows
+## Milestone 5 – Complete Game UI & User Flows ✅
 
 מטרת ה־Milestone: להשלים את כל המסכים והזרימות בהתאם ל־PRD ול־Mockups.
 
+> הושלם. תוכנית מפורטת: `spec/plans/milestone-5.md`.
+
 ### Slices
 
-1. **מסך ראשי מלא**
+1. **מסך ראשי מלא** ✅
    - לוגו.
    - שם המשחק.
    - כפתור "התחל".
 
-2. **Game HUD מעוצב**
+2. **Game HUD מעוצב** ✅
    - ניקוד.
    - חיים.
    - שלב.
@@ -280,42 +282,42 @@
    - Sound Toggle.
    - "סיים משחק".
 
-3. **חסימת Navigation בזמן משחק**
+3. **חסימת Navigation בזמן משחק** ✅
    - הסתרה או Disable של התפריט.
 
-4. **Confirmation לסיום משחק**
+4. **Confirmation לסיום משחק** ✅
    - הצגת Dialog:
      - "האם אתה בטוח שברצונך לסיים את המשחק?"
    - ביטול.
    - אישור.
 
-5. **סיום משחק יזום**
+5. **סיום משחק יזום** ✅
    - עצירת Game Loop.
    - ניקוי Game State.
    - חזרה למסך הראשי.
    - ללא שמירת Statistics.
 
-6. **מסך Game Over**
+6. **מסך Game Over** ✅
    - Win / Loss.
    - Final Score.
    - Level Reached.
    - כפתור "משחק חדש".
 
-7. **מסך How To Play**
+7. **מסך How To Play** ✅
    - מטרת המשחק.
    - איך משחקים.
    - חיים.
    - מעבר שלב.
    - הפסד.
 
-8. **מסך About**
+8. **מסך About** ✅
    - לוגו.
    - Space Shooter.
    - גרסה 1.0.
    - טקסט קצר.
    - קרדיט: אסף פינקלשטיין.
 
-9. **יישור מלא ל־Mockups**
+9. **יישור מלא ל־Mockups** ✅
    - צבעים.
    - Spacing.
    - Borders.
@@ -325,9 +327,13 @@
 
 ### Definition of Done
 
-- כל המסכים תואמים לזרימות שהוגדרו ב־PRD.
-- ניתן לבצע את כל User Flows מתחילתם ועד סופם.
-- העיצוב תואם ל־Style Guide ול־Mockups.
+- [x] כל המסכים תואמים לזרימות שהוגדרו ב־PRD.
+- [x] ניתן לבצע את כל User Flows מתחילתם ועד סופם.
+- [x] העיצוב תואם ל־Style Guide ול־Mockups.
+
+> הערה: Sound Toggle ממומש כ-UI + State בזיכרון בלבד (אין אודיו אמיתי — Milestone 7;
+> אין שמירת ההעדפה ב-localStorage — Milestone 6). מסך הסטטיסטיקות נשאר במצב
+> "אין נתונים" (הצגת נתונים אמיתיים — Milestone 6). ראו `spec/plans/milestone-5.md §1`.
 
 ---
 
