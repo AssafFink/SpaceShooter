@@ -117,8 +117,12 @@ export const GAME_CONFIG = {
     masterVolume: 0.6,
     musicVolume: 0.32,
     sfxVolume: 0.55,
-    /** Laser sound: a short one-shot file, played through sfxGain per shot. */
-    laser: { src: '/audio/laser.mp3' },
+    /**
+     * Laser sound: a short one-shot file, played through sfxGain per shot.
+     * Prefixed with Vite's BASE_URL so it resolves under the deploy path
+     * (e.g. /SpaceShooter/audio/... on GitHub Pages, /audio/... in dev).
+     */
+    laser: { src: `${import.meta.env.BASE_URL}audio/laser.mp3` },
     /** Enemy explosion: a noise burst through a Lowpass filter; duration grows slightly with size. */
     enemyExplosion: {
       filterFreq: 1500,
@@ -130,7 +134,8 @@ export const GAME_CONFIG = {
     cannonExplosion: { durationSeconds: 0.6, filterFreq: 800, thumpFreq: 72 },
     /** Looping background music file (§31), played through musicGain. */
     music: {
-      src: '/audio/background-music.mp3',
+      // BASE_URL prefix — see the laser note above.
+      src: `${import.meta.env.BASE_URL}audio/background-music.mp3`,
     },
   },
 
