@@ -1,17 +1,24 @@
+import type { LevelConfig } from '../types/game';
+
 /**
- * Game Configuration מרכזי — Milestone 2+3 (Core Game Prototype, Enemies & Combat).
+ * Game Configuration מרכזי — Milestone 2+3+4.
  * מקור: spec/ARCHITECTURE.md §62 (Constants במקום Magic Numbers), §63 (Suggested
- * Game Configuration).
- *
- * שדות של Milestones מאוחרים (maxLives, totalLevels, levels...) ייווספו באותם
- * Milestones עצמם — אין להוסיף כאן שדות שאין להם עדיין שימוש (ARCHITECTURE §61).
- *
- * `prototypeWave` הוא גל אויבים זמני ל-Milestone 3 בלבד — ב-Milestone 4 הוא
- * יוחלף ב-`LEVELS[10]` (Level Configuration), ראו spec/plans/milestone-3.md §15.
+ * Game Configuration), §18 (Level Configuration).
  */
 export const GAME_CONFIG = {
   /** Delta מקסימלי לפריים (שניות) — מונע "קפיצה" גדולה אחרי Tab לא פעיל. */
   maxDeltaSeconds: 0.05,
+
+  /** ARCHITECTURE §63, §9. */
+  maxLives: 3,
+  totalLevels: 10,
+
+  /** משך הצגת "שלב X הושלם" לפני מעבר אוטומטי (ARCHITECTURE §20, §63). */
+  levelCompleteDelaySeconds: 1.2,
+  /** משך אנימציית פיצוץ התותח לפני Restart/Loss (ARCHITECTURE §21, §63). */
+  cannonExplosionDurationSeconds: 0.8,
+  /** השהיה לפני האויב הראשון של כל שלב, כדי שהשחקן יספיק להתמקם. */
+  firstSpawnDelaySeconds: 0.8,
 
   projectile: {
     /** מהירות קליע, פיקסלים לשנייה (ARCHITECTURE §63). */
@@ -36,6 +43,8 @@ export const GAME_CONFIG = {
     maxAngle: 0,
     /** מהירות "היצמדות" הזווית לכיוון היעד, ליחידת שנייה. */
     rotationLerp: 18,
+    /** רדיוס אזור הפגיעה של התותח לצורך התנגשות אויב–תותח (ARCHITECTURE §21). */
+    hitRadius: 30,
   },
 
   background: {
@@ -60,26 +69,11 @@ export const GAME_CONFIG = {
     spawnMarginX: 24,
     /** סטייה זוויתית מקסימלית מהקו הישר אל התותח, ברדיאנים (~9°, ARCHITECTURE §16). */
     maxAimJitter: 0.16,
-    /** שוליים מתחת לגבול התחתון שאחריהם האויב מוסר (Milestone 3 בלבד). */
+    /**
+     * שוליים מתחת לגבול התחתון שאחריהם אויב מוסר בשקט — מקרה של אויב שהחמיץ
+     * את התותח ויצא בצד (ARCHITECTURE §16; ראו spec/plans/milestone-4.md §1 החלטה 1).
+     */
     despawnMarginY: 60,
-  },
-
-  /**
-   * גל Prototype ל-Milestone 3 בלבד. ב-Milestone 4 יוחלף ב-LEVELS[]
-   * (Level Configuration ל-10 שלבים, ARCHITECTURE §18) — ואז יש להסיר בלוק זה.
-   */
-  prototypeWave: {
-    enemyCount: 12,
-    spawnIntervalMinSeconds: 1.0,
-    spawnIntervalMaxSeconds: 2.0,
-    /** השהיה לפני האויב הראשון, כדי שהשחקן יספיק להתמקם. */
-    firstSpawnDelaySeconds: 0.8,
-    speedMin: 30,
-    speedMax: 55,
-    /** סכום ההסתברויות = 1 (ARCHITECTURE §17, §19). */
-    smallProbability: 0.5,
-    mediumProbability: 0.35,
-    largeProbability: 0.15,
   },
 
   explosion: {
@@ -88,6 +82,11 @@ export const GAME_CONFIG = {
     radiusMultiplier: 2.2,
     ringWidth: 4,
     sparkCount: 8,
+  },
+
+  /** פיצוץ התותח משתמש חוזר בישות Explosion, בגודל שיא גדול יותר (ARCHITECTURE §45). */
+  cannonExplosion: {
+    maxRadius: 90,
   },
 
   /**
@@ -111,3 +110,25 @@ export const GAME_CONFIG = {
     explosionSpark: '#9B5CFF',
   },
 } as const;
+
+/**
+ * הגדרת 10 השלבים — ARCHITECTURE §18. כל שדה הוא **טווח**; הערכים בפועל
+ * מוגרלים בתוכו בכל תחילת שלב (EnemySpawner.reset, ARCHITECTURE §19), כך
+ * שאותו שלב נראה שונה מעט בין משחקים אך נשאר באותה רמת קושי.
+ *
+ * הקושי עולה בהדרגה בארבעה צירים במקביל (PRD §4.9): יותר אויבים, מרווחי
+ * Spawn קצרים יותר, מהירות גבוהה יותר ויותר אויבים בינוניים/גדולים. הערכים
+ * הם נקודת פתיחה לילדים 6-12 (PRD §4.9, §5) — כיוונון מדויק ב-Milestone 9.
+ */
+export const LEVELS: readonly LevelConfig[] = [
+  { level: 1, enemyCountMin: 4, enemyCountMax: 6, spawnIntervalMinSeconds: 1.6, spawnIntervalMaxSeconds: 2.4, enemySpeedMin: 30, enemySpeedMax: 45, smallProbability: 0.7, mediumProbability: 0.25, largeProbability: 0.05 },
+  { level: 2, enemyCountMin: 5, enemyCountMax: 7, spawnIntervalMinSeconds: 1.5, spawnIntervalMaxSeconds: 2.2, enemySpeedMin: 32, enemySpeedMax: 48, smallProbability: 0.65, mediumProbability: 0.28, largeProbability: 0.07 },
+  { level: 3, enemyCountMin: 6, enemyCountMax: 9, spawnIntervalMinSeconds: 1.4, spawnIntervalMaxSeconds: 2.1, enemySpeedMin: 35, enemySpeedMax: 52, smallProbability: 0.6, mediumProbability: 0.3, largeProbability: 0.1 },
+  { level: 4, enemyCountMin: 8, enemyCountMax: 11, spawnIntervalMinSeconds: 1.3, spawnIntervalMaxSeconds: 1.9, enemySpeedMin: 38, enemySpeedMax: 56, smallProbability: 0.55, mediumProbability: 0.32, largeProbability: 0.13 },
+  { level: 5, enemyCountMin: 9, enemyCountMax: 13, spawnIntervalMinSeconds: 1.2, spawnIntervalMaxSeconds: 1.8, enemySpeedMin: 42, enemySpeedMax: 60, smallProbability: 0.5, mediumProbability: 0.35, largeProbability: 0.15 },
+  { level: 6, enemyCountMin: 11, enemyCountMax: 15, spawnIntervalMinSeconds: 1.1, spawnIntervalMaxSeconds: 1.7, enemySpeedMin: 45, enemySpeedMax: 65, smallProbability: 0.45, mediumProbability: 0.37, largeProbability: 0.18 },
+  { level: 7, enemyCountMin: 12, enemyCountMax: 17, spawnIntervalMinSeconds: 1.0, spawnIntervalMaxSeconds: 1.6, enemySpeedMin: 48, enemySpeedMax: 70, smallProbability: 0.4, mediumProbability: 0.38, largeProbability: 0.22 },
+  { level: 8, enemyCountMin: 14, enemyCountMax: 19, spawnIntervalMinSeconds: 0.9, spawnIntervalMaxSeconds: 1.5, enemySpeedMin: 52, enemySpeedMax: 75, smallProbability: 0.35, mediumProbability: 0.4, largeProbability: 0.25 },
+  { level: 9, enemyCountMin: 16, enemyCountMax: 21, spawnIntervalMinSeconds: 0.8, spawnIntervalMaxSeconds: 1.4, enemySpeedMin: 55, enemySpeedMax: 80, smallProbability: 0.32, mediumProbability: 0.4, largeProbability: 0.28 },
+  { level: 10, enemyCountMin: 18, enemyCountMax: 24, spawnIntervalMinSeconds: 0.7, spawnIntervalMaxSeconds: 1.3, enemySpeedMin: 60, enemySpeedMax: 88, smallProbability: 0.3, mediumProbability: 0.4, largeProbability: 0.3 },
+];

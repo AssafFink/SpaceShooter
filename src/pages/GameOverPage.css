@@ -10,8 +10,12 @@
   filter: drop-shadow(0 0 20px rgba(255, 200, 61, 0.6));
 }
 
-.game-over-page__result {
+.game-over-page__result--win {
   color: var(--color-success);
+}
+
+.game-over-page__result--loss {
+  color: var(--color-danger);
 }
 
 .game-over-page__stats {

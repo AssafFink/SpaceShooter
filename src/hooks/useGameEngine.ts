@@ -1,19 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
+import { GAME_CONFIG } from '../game/gameConfig';
 import { GameEngine } from '../game/GameEngine';
 import type { GameStats } from '../types/game';
 
-const INITIAL_STATS: GameStats = { score: 0, enemiesRemaining: 0 };
+const INITIAL_STATS: GameStats = {
+  score: 0,
+  lives: GAME_CONFIG.maxLives,
+  currentLevel: 1,
+  enemiesRemaining: 0,
+  status: 'playing',
+};
 
 /**
  * הגשר בין React למנוע המשחק (GameEngine).
- * מקור: spec/ARCHITECTURE.md §51 (הפרדה בין React למנוע), §54 (Milestone 3).
+ * מקור: spec/ARCHITECTURE.md §51 (הפרדה בין React למנוע), §54.
  *
  * אחראי על: יצירת ה-Engine, האזנה ל-Resize ול-Input, הפעלה, וניקוי מלא
  * ב-unmount (ARCHITECTURE §53) — כולל טיפול נכון ב-React StrictMode
  * (ה-effect רץ פעמיים ב-dev; ה-cleanup חייב להיות מלא ואידמפוטנטי).
  *
- * `stats` (ניקוד + אויבים שנותרו) מתעדכן דרך callback שה-Engine קורא לו רק
- * כשערך משתנה בפועל — אין Re-render של React בכל Frame (ARCHITECTURE §54).
+ * `stats` (ניקוד, חיים, שלב, אויבים שנותרו, status) מתעדכן דרך callback
+ * שה-Engine קורא לו רק כשערך משתנה בפועל — אין Re-render של React בכל
+ * Frame (ARCHITECTURE §54).
  */
 export function useGameEngine() {
   const containerRef = useRef<HTMLDivElement | null>(null);

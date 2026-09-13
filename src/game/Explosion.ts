@@ -13,14 +13,27 @@ const { explosion: config } = GAME_CONFIG;
 
 /** יוצר פיצוץ במיקום אויב שחוסל, בגודל יחסי לגודל האויב. */
 export function createExplosion(id: string, enemy: Enemy): Explosion {
-  return {
+  return createExplosionAt(
     id,
-    x: enemy.x,
-    y: enemy.y,
-    maxRadius: getEnemyRadius(enemy.size) * config.radiusMultiplier,
-    elapsedSeconds: 0,
-    durationSeconds: config.durationSeconds,
-  };
+    enemy.x,
+    enemy.y,
+    getEnemyRadius(enemy.size) * config.radiusMultiplier,
+    config.durationSeconds,
+  );
+}
+
+/**
+ * יוצר פיצוץ במיקום ורדיוס נתונים — משמש גם את פיצוץ התותח (ARCHITECTURE §21,
+ * §45; Milestone 4), ולא רק חיסול אויב.
+ */
+export function createExplosionAt(
+  id: string,
+  x: number,
+  y: number,
+  maxRadius: number,
+  durationSeconds: number,
+): Explosion {
+  return { id, x, y, maxRadius, elapsedSeconds: 0, durationSeconds };
 }
 
 /** מקדם את זמן הפיצוץ (ARCHITECTURE §7). */

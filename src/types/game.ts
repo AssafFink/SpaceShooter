@@ -1,9 +1,7 @@
 /**
- * Types בסיסיים למנוע המשחק — Milestone 2+3 (Core Game Prototype, Enemies & Combat).
- * מקור: spec/ARCHITECTURE.md §12 (Projectile System), §14-15 (Enemy Model), §45 (Explosion).
- *
- * GameState / GameStatus המלאים (lives, currentLevel, status) יתווספו ב-Milestone 4
- * כאשר יהיה בהם צורך בפועל — אין להוסיף Types לא בשימוש (ARCHITECTURE §61).
+ * Types בסיסיים למנוע המשחק — Milestone 2+3+4.
+ * מקור: spec/ARCHITECTURE.md §8 (Game State), §12 (Projectile System),
+ * §14-15 (Enemy Model), §18 (Level Configuration), §45 (Explosion).
  */
 
 /** נקודה או וקטור דו-ממדי, ב-CSS Pixels יחסית לאזור המשחק. */
@@ -59,8 +57,39 @@ export interface Explosion {
   durationSeconds: number;
 }
 
+/**
+ * מצב המשחק הכללי (ARCHITECTURE §8). `GameEngine.update()` מתפצל לפי שדה זה —
+ * רק ב-`playing` רצים Spawn, תנועת אויבים ו-Collision (Milestone 4).
+ */
+export type GameStatus =
+  | 'playing'
+  | 'level-complete'
+  | 'player-hit'
+  | 'won'
+  | 'lost';
+
+/**
+ * טווחים בלבד — הערכים בפועל מוגרלים בתוכם בכל תחילת שלב (ARCHITECTURE §18-19).
+ * הבדלת סוגי האויבים היא לפי גודל בלבד; שלוש ההסתברויות סוכמות ל-1.
+ */
+export interface LevelConfig {
+  level: number;
+  enemyCountMin: number;
+  enemyCountMax: number;
+  spawnIntervalMinSeconds: number;
+  spawnIntervalMaxSeconds: number;
+  enemySpeedMin: number;
+  enemySpeedMax: number;
+  smallProbability: number;
+  mediumProbability: number;
+  largeProbability: number;
+}
+
 /** מה שה-UI (React) צריך לדעת מהמנוע — ותו לא (ARCHITECTURE §54). */
 export interface GameStats {
   score: number;
+  lives: number;
+  currentLevel: number;
   enemiesRemaining: number;
+  status: GameStatus;
 }

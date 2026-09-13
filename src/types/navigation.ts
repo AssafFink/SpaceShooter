@@ -20,6 +20,19 @@ export interface NavItem {
 }
 
 /**
+ * ה-state שמועבר בניווט מ-`/game` ל-`/game-over` (Milestone 4).
+ * מקור: spec/ARCHITECTURE.md §25 (Game Result), §24-25 (Win/Loss).
+ *
+ * מועבר דרך `location.state` של React Router — לא נשמר ב-localStorage
+ * (שמירת תוצאה בסטטיסטיקות היא Milestone 6).
+ */
+export interface GameOverState {
+  result: 'win' | 'loss';
+  finalScore: number;
+  levelReached: number;
+}
+
+/**
  * פריטי תפריט הניווט הראשי (זמינים כאשר אין משחק פעיל).
  * ARCHITECTURE §38: ראשי, סטטיסטיקות, איך לשחק, אודות.
  */

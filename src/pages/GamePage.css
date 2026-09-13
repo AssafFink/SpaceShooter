@@ -9,7 +9,10 @@
   align-items: center;
 }
 
-.game-page > .game-canvas {
+.game-page__canvas-wrap {
+  position: relative;
+  display: flex;
+  flex: 1;
   width: 100%;
   max-width: var(--max-content-width);
 }

@@ -67,8 +67,12 @@ export function isDestroyed(enemy: Enemy): boolean {
 
 /**
  * האם האויב חצה את הגבול התחתון של אזור המשחק (כולל שוליים).
- * Milestone 3 בלבד — ב-Milestone 4 יוחלף בהתנגשות אויב–תותח אמיתית
- * (ראו spec/plans/milestone-3.md §1 החלטה 1).
+ *
+ * Milestone 4: משמש לזיהוי אויב שהחמיץ את התותח ויצא בצד — התנגשות
+ * אויב–תותח האמיתית (§21) נבדקת בנפרד ב-`CollisionManager.detectCannonHit`
+ * ותמיד קודמת לבדיקה זו באותו פריים (ראו spec/plans/milestone-4.md §1 החלטה 2).
+ * אויב שחצה את התחתית מבלי לגעת בתותח מוסר בשקט, ללא חיים וללא פיצוץ
+ * (spec/plans/milestone-4.md §1 החלטה 1).
  */
 export function hasPassedBottom(enemy: Enemy, bounds: GameBounds): boolean {
   return enemy.y - getEnemyRadius(enemy.size) > bounds.height + config.despawnMarginY;

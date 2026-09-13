@@ -1,13 +1,14 @@
 import { getHitRadius } from './Enemy';
-import type { Enemy, Projectile } from '../types/game';
+import type { Enemy, Projectile, Vector2 } from '../types/game';
 
 /**
- * Collision Detection בין Projectile ל-Enemy — Milestone 3 (Enemies & Combat).
- * מקור: spec/ARCHITECTURE.md §13, PRD §4.5.
+ * Collision Detection — Milestone 3+4.
+ * מקור: spec/ARCHITECTURE.md §13 (Projectile↔Enemy), §21 (Enemy↔Cannon), PRD §4.5.
  *
- * משתמש ב-Swept Collision (קטע מול מעגל) ולא בבדיקת מרחק נקודתית: קליע נע עד
- * ~45px בפריים אחד (900px/s * maxDeltaSeconds), יותר מקוטר אויב קטן (30px) —
- * בדיקה נקודתית הייתה מפספסת פגיעות. ראו spec/plans/milestone-3.md §3.3.
+ * Projectile↔Enemy משתמש ב-Swept Collision (קטע מול מעגל) ולא בבדיקת מרחק
+ * נקודתית: קליע נע עד ~45px בפריים אחד (900px/s * maxDeltaSeconds), יותר
+ * מקוטר אויב קטן (30px) — בדיקה נקודתית הייתה מפספסת פגיעות. ראו
+ * spec/plans/milestone-3.md §3.3.
  */
 
 export interface ProjectileHit {
@@ -76,4 +77,22 @@ export function detectProjectileHits(
   }
 
   return hits;
+}
+
+/**
+ * האם אויב פעיל כלשהו נוגע באזור הפגיעה של התותח (ARCHITECTURE §21).
+ * מספיק מגע אחד — Hit Lock (ה-status `player-hit`) מוריד חיים אחד בלבד
+ * ללא קשר לכמות האויבים שמגיעים כמעט בו-זמנית (PRD §4.8).
+ */
+export function detectCannonHit(
+  enemies: readonly Enemy[],
+  cannonPosition: Vector2,
+  cannonHitRadius: number,
+): boolean {
+  for (const enemy of enemies) {
+    if (!enemy.active) continue;
+    const distance = Math.hypot(enemy.x - cannonPosition.x, enemy.y - cannonPosition.y);
+    if (distance <= cannonHitRadius + getHitRadius(enemy.size)) return true;
+  }
+  return false;
 }
