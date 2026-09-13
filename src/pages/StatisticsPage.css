@@ -25,3 +25,15 @@
   text-align: center;
   color: var(--color-text);
 }
+
+.statistics-page__result {
+  font-weight: var(--font-weight-bold);
+}
+
+.statistics-page__result--win {
+  color: var(--color-success);
+}
+
+.statistics-page__result--loss {
+  color: var(--color-danger);
+}

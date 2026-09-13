@@ -337,62 +337,64 @@
 
 ---
 
-## Milestone 6 – Persistence & Statistics
+## Milestone 6 – Persistence & Statistics ✅
 
 מטרת ה־Milestone: לשמור תוצאות משחק והעדפות מקומיות באמצעות `localStorage`.
 
+> הושלם. תוכנית מפורטת: `spec/plans/milestone-6.md`.
+
 ### Slices
 
-1. **יצירת Storage Service**
+1. **יצירת Storage Service** ✅
    - `getStatistics()`
    - `saveGameResult()`
    - `getSoundMuted()`
    - `setSoundMuted()`
 
-2. **יצירת Game Result Model**
+2. **יצירת Game Result Model** ✅
    - ID.
    - Date.
    - Final Score.
    - Level Reached.
    - Win / Loss.
 
-3. **שמירת ניצחון**
+3. **שמירת ניצחון** ✅
    - שמירת Result לאחר השלמת Level 10.
 
-4. **שמירת הפסד**
+4. **שמירת הפסד** ✅
    - שמירת Result לאחר איבוד 3 חיים.
 
-5. **אי־שמירת משחק שננטש**
+5. **אי־שמירת משחק שננטש** ✅
    - סיום יזום.
    - Refresh.
    - סגירת Browser/PWA.
 
-6. **מסך Statistics**
+6. **מסך Statistics** ✅
    - קריאה מ־localStorage.
    - הצגה בטבלה.
 
-7. **מיון Statistics**
+7. **מיון Statistics** ✅
    - המשחק האחרון מופיע ראשון.
 
-8. **מצב ללא נתונים**
+8. **מצב ללא נתונים** ✅
    - הצגת:
      - "עדיין אין משחקים קודמים להצגה".
 
-9. **Error Handling**
+9. **Error Handling** ✅
    - טיפול ב־JSON לא תקין.
    - שימוש בערכי Default בטוחים.
 
-10. **שמירת Sound Preference**
+10. **שמירת Sound Preference** ✅
     - שמירת מצב Mute.
     - טעינה מחדש של ההעדפה בכניסה הבאה.
 
 ### Definition of Done
 
-- Win ו־Loss נשמרים נכון.
-- משחקים שננטשו אינם נשמרים.
-- Statistics נשמרים גם לאחר סגירת הדפדפן.
-- Sound Preference נשמר.
-- נתונים פגומים אינם גורמים ל־Crash.
+- [x] Win ו־Loss נשמרים נכון.
+- [x] משחקים שננטשו אינם נשמרים.
+- [x] Statistics נשמרים גם לאחר סגירת הדפדפן.
+- [x] Sound Preference נשמר.
+- [x] נתונים פגומים אינם גורמים ל־Crash.
 
 ---
 
