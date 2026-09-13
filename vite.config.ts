@@ -6,9 +6,10 @@ import { VitePWA } from 'vite-plugin-pwa'
 //
 // PWA setup — Milestone 8 (spec/ARCHITECTURE.md §46-47, spec/plans/milestone-8.md §2).
 // `vite-plugin-pwa` (Workbox under the hood) generates the Service Worker and
-// precaches every build output (JS/CSS/HTML/images/fonts) so the app works
-// fully offline after first load — no manual asset list to maintain. Audio is
-// synthesized in-browser (Milestone 7, no audio files), so it needs no caching.
+// precaches every build output (JS/CSS/HTML/images/fonts/audio) so the app
+// works fully offline after first load — no manual asset list to maintain.
+// SFX are synthesized in-browser (Milestone 7); background music is a file
+// under public/audio, so it needs `mp3` in the precache glob below.
 export default defineConfig({
   plugins: [
     react(),
@@ -41,7 +42,10 @@ export default defineConfig({
       workbox: {
         // Precache every build artifact so the app is fully usable offline
         // right after the first visit (ARCHITECTURE §47).
-        globPatterns: ['**/*.{js,css,html,svg,png,woff,woff2}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,woff,woff2,mp3}'],
+        // Workbox's 2 MiB default is smaller than the background-music file
+        // (~3.4 MB); raise the cap so precaching doesn't skip it.
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         // React Router (BrowserRouter) needs deep links (e.g. /statistics) to
         // resolve to index.html when served from the offline cache.
         navigateFallback: '/index.html',

@@ -104,18 +104,21 @@ export const GAME_CONFIG = {
   },
 
   /**
-   * Audio is synthesized via the Web Audio API (Milestone 7) — no external
-   * files. Source: spec/ARCHITECTURE.md §30-33; decision origin
-   * spec/plans/milestone-7.md §1.1. Volumes are in the 0..1 range; muting
-   * happens through masterGain (§32 — no Volume Slider and no separate
-   * music/effects control in the UI).
+   * Explosion SFX are synthesized via the Web Audio API (Milestone 7).
+   * Source: spec/ARCHITECTURE.md §30-33; decision origin
+   * spec/plans/milestone-7.md §1.1. The laser SFX and the looping background
+   * music are audio files (see `laser.src` / `music.src`) — see the addendum
+   * in milestone-7.md for why that original "synthesized only" decision was
+   * revisited. Volumes are in the 0..1 range; muting happens through
+   * masterGain (§32 — no Volume Slider and no separate music/effects control
+   * in the UI).
    */
   audio: {
     masterVolume: 0.6,
     musicVolume: 0.32,
     sfxVolume: 0.55,
-    /** Laser sound: a fast downward Sweep (ARCHITECTURE §UX — immediate feedback). */
-    laser: { startFreq: 840, endFreq: 190, durationSeconds: 0.13 },
+    /** Laser sound: a short one-shot file, played through sfxGain per shot. */
+    laser: { src: '/audio/laser.mp3' },
     /** Enemy explosion: a noise burst through a Lowpass filter; duration grows slightly with size. */
     enemyExplosion: {
       filterFreq: 1500,
@@ -125,17 +128,9 @@ export const GAME_CONFIG = {
     },
     /** Cannon explosion: a large noise burst + a low thump. */
     cannonExplosion: { durationSeconds: 0.6, filterFreq: 800, thumpFreq: 72 },
-    /**
-     * Synthesized looping background music (§31). The Scheduler in
-     * audioService schedules one step every stepSeconds; the sequence
-     * repeats. A modest tempo, not jarring for kids.
-     */
+    /** Looping background music file (§31), played through musicGain. */
     music: {
-      stepSeconds: 0.32,
-      /** Bass frequencies (Hz), one step per note — minor scale, short loop. */
-      bass: [55, 55, 82.41, 65.41],
-      /** Arpeggio above the bass (Hz). */
-      arp: [220, 261.63, 329.63, 261.63, 220, 329.63, 392, 329.63],
+      src: '/audio/background-music.mp3',
     },
   },
 

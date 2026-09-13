@@ -3,13 +3,17 @@ import type { EnemySize } from '../types/game';
 
 /**
  * Central Web Audio service — Milestone 7. Source: spec/ARCHITECTURE.md §30-33;
- * decision in spec/plans/milestone-7.md §1.1 (synthesized audio, no files).
+ * decision in spec/plans/milestone-7.md §1.1 (synthesized SFX); see that
+ * plan's addendum for why background music was later switched to a file.
  *
- * All sound — laser, explosions and the looping background music — is
- * synthesized at runtime, so the game has zero remote/audio-file dependencies
- * and is Offline-ready for M8. No component touches Web Audio directly (§30):
- * the game engine emits events, `useAudio` drives mute/unlock, and both go
- * through this single module.
+ * Explosion SFX are synthesized at runtime. The laser SFX is a short audio
+ * file, decoded once into an AudioBuffer and played through a fresh
+ * BufferSource per shot so rapid fire can overlap. Background music is a
+ * looping audio file (`cfg.music.src`), routed into the same gain graph via a
+ * MediaElementAudioSourceNode. All three go through the same sfx/music gains,
+ * so mute and volume behave identically. No component touches Web Audio
+ * directly (§30): the game engine emits events, `useAudio` drives mute/unlock,
+ * and both go through this single module.
  *
  * Graph: master → destination, with music/sfx sub-gains under master. Mute
  * (§32, no volume slider) ramps master to 0. Autoplay policy (§31): the
@@ -26,12 +30,17 @@ let musicGain: GainNode | null = null;
 let sfxGain: GainNode | null = null;
 let muted = false;
 
-// Background-music scheduler state (lookahead scheduling on the audio clock).
-let musicTimer: number | null = null;
-let musicStep = 0;
-let nextStepTime = 0;
-const LOOKAHEAD_SECONDS = 0.2;
-const SCHEDULER_INTERVAL_MS = 50;
+// Background-music element, wired into musicGain the first time it's needed.
+// The MediaElementAudioSourceNode can only be created once per <audio>
+// element, so the element itself is cached here for the lifetime of the
+// page; the source node needs no JS reference once connected — the Web
+// Audio graph keeps it alive as long as the connection stands.
+let musicElement: HTMLAudioElement | null = null;
+
+// Laser SFX buffer, decoded lazily on first unlock and reused for every shot.
+// null until the fetch+decode resolves; playLaser is a no-op until then, so
+// the first shot or two may be silent while it loads (a few ms in practice).
+let laserBuffer: AudioBuffer | null = null;
 
 /** Lazily create the AudioContext + gain graph. Returns null if unsupported. */
 function ensure(): AudioContext | null {
@@ -59,32 +68,6 @@ function ensure(): AudioContext | null {
     ctx = null;
   }
   return ctx;
-}
-
-/** A short tone with a quick attack/decay envelope into a target gain node. */
-function playTone(
-  context: AudioContext,
-  destination: GainNode,
-  frequency: number,
-  startTime: number,
-  duration: number,
-  type: OscillatorType,
-  peak: number,
-): void {
-  const osc = context.createOscillator();
-  const env = context.createGain();
-  osc.type = type;
-  osc.frequency.setValueAtTime(frequency, startTime);
-  env.gain.setValueAtTime(0.0001, startTime);
-  env.gain.exponentialRampToValueAtTime(peak, startTime + 0.02);
-  env.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
-  osc.connect(env).connect(destination);
-  osc.start(startTime);
-  osc.stop(startTime + duration + 0.02);
-  osc.onended = () => {
-    osc.disconnect();
-    env.disconnect();
-  };
 }
 
 /** A filtered, decaying noise burst — the basis of both explosion sounds. */
@@ -117,38 +100,49 @@ function noiseBurst(duration: number, filterFreq: number, peak: number): void {
   };
 }
 
-/** Schedules one step of the looping bass + arpeggio pattern. */
-function scheduleStep(stepTime: number): void {
-  if (!ctx || !musicGain) return;
-  const { bass, arp, stepSeconds } = cfg.music;
-  playTone(ctx, musicGain, bass[musicStep % bass.length], stepTime, stepSeconds * 0.95, 'triangle', 0.6);
-  playTone(ctx, musicGain, arp[musicStep % arp.length], stepTime, stepSeconds * 0.6, 'sawtooth', 0.22);
-  musicStep += 1;
-}
-
-/** Lookahead scheduler: queues notes slightly ahead of the audio clock. */
-function schedulerTick(): void {
-  if (!ctx) return;
-  while (nextStepTime < ctx.currentTime + LOOKAHEAD_SECONDS) {
-    scheduleStep(nextStepTime);
-    nextStepTime += cfg.music.stepSeconds;
+/** Lazily creates the <audio> element and routes it into musicGain. */
+function ensureMusicElement(context: AudioContext): HTMLAudioElement | null {
+  if (musicElement) return musicElement;
+  if (!musicGain) return null;
+  try {
+    const element = new Audio(cfg.music.src);
+    element.loop = true;
+    element.preload = 'auto';
+    context.createMediaElementSource(element).connect(musicGain);
+    musicElement = element;
+  } catch {
+    musicElement = null;
   }
+  return musicElement;
 }
 
 function startMusic(): void {
   const context = ensure();
-  if (!context || musicTimer !== null) return;
-  musicStep = 0;
-  nextStepTime = context.currentTime + 0.1;
-  schedulerTick();
-  musicTimer = window.setInterval(schedulerTick, SCHEDULER_INTERVAL_MS);
+  if (!context) return;
+  const element = ensureMusicElement(context);
+  if (!element) return;
+  void element.play().catch(() => {
+    // Autoplay was blocked (e.g. gesture requirement not yet satisfied) —
+    // the next unlock()/setMuted(false) call will retry.
+  });
 }
 
 function stopMusic(): void {
-  if (musicTimer !== null) {
-    window.clearInterval(musicTimer);
-    musicTimer = null;
-  }
+  musicElement?.pause();
+}
+
+/** Fetches and decodes the laser SFX once; safe to call repeatedly. */
+function loadLaserBuffer(context: AudioContext): void {
+  if (laserBuffer) return;
+  fetch(cfg.laser.src)
+    .then((res) => res.arrayBuffer())
+    .then((data) => context.decodeAudioData(data))
+    .then((buffer) => {
+      laserBuffer = buffer;
+    })
+    .catch(() => {
+      // Load/decode failed — playLaser stays a silent no-op, game unaffected.
+    });
 }
 
 export const audioService = {
@@ -157,22 +151,25 @@ export const audioService = {
     const context = ensure();
     if (!context) return;
     if (context.state === 'suspended') void context.resume();
+    loadLaserBuffer(context);
     if (!muted) startMusic();
   },
 
   /**
-   * Suspends the AudioContext (e.g. tab/app moved to the background) so
-   * synthesized music doesn't keep playing while the game itself is frozen
-   * (rAF is paused). No-op if audio was never unlocked. Milestone 9,
-   * spec/plans/milestone-9.md §1 (F7).
+   * Suspends the AudioContext and pauses the music element (e.g. tab/app
+   * moved to the background) so nothing keeps playing while the game itself
+   * is frozen (rAF is paused). No-op if audio was never unlocked. Milestone
+   * 9, spec/plans/milestone-9.md §1 (F7).
    */
   suspend(): void {
     if (ctx && ctx.state === 'running') void ctx.suspend();
+    musicElement?.pause();
   },
 
-  /** Resumes the AudioContext after it was suspended by `suspend()`. */
+  /** Resumes the AudioContext and music after `suspend()`, unless muted. */
   resume(): void {
     if (ctx && ctx.state === 'suspended') void ctx.resume();
+    if (!muted) startMusic();
   },
 
   /** Mute/unmute everything together (§32). Ramps master gain; toggles music. */
@@ -190,23 +187,12 @@ export const audioService = {
 
   playLaser(): void {
     const context = ensure();
-    if (!context || !sfxGain) return;
-    const t = context.currentTime;
-    const osc = context.createOscillator();
-    const env = context.createGain();
-    osc.type = 'square';
-    osc.frequency.setValueAtTime(cfg.laser.startFreq, t);
-    osc.frequency.exponentialRampToValueAtTime(cfg.laser.endFreq, t + cfg.laser.durationSeconds);
-    env.gain.setValueAtTime(0.0001, t);
-    env.gain.exponentialRampToValueAtTime(0.9, t + 0.01);
-    env.gain.exponentialRampToValueAtTime(0.0001, t + cfg.laser.durationSeconds);
-    osc.connect(env).connect(sfxGain);
-    osc.start(t);
-    osc.stop(t + cfg.laser.durationSeconds + 0.02);
-    osc.onended = () => {
-      osc.disconnect();
-      env.disconnect();
-    };
+    if (!context || !sfxGain || !laserBuffer) return;
+    const source = context.createBufferSource();
+    source.buffer = laserBuffer;
+    source.connect(sfxGain);
+    source.start(context.currentTime);
+    source.onended = () => source.disconnect();
   },
 
   playEnemyExplosion(size: EnemySize): void {
