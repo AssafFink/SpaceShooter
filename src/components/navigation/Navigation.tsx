@@ -9,6 +9,8 @@ import './Navigation.css';
  * Source: spec/ARCHITECTURE.md §38, spec/DESIGN.md.
  *
  * Hidden entirely during an active game (App.tsx, Milestone 5) — PRD §4.2, ARCHITECTURE §39.
+ * Links use `replace` so screens never stack in history — the phone's Back
+ * button exits the app instead of walking back through screens.
  */
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,7 +22,7 @@ export function Navigation() {
   return (
     <header className="nav">
       <div className="nav__bar">
-        <NavLink to="/" className="nav__brand" onClick={closeMenu}>
+        <NavLink to="/" replace className="nav__brand" onClick={closeMenu}>
           Space Shooter
         </NavLink>
 
@@ -30,6 +32,7 @@ export function Navigation() {
             <NavLink
               key={item.path}
               to={item.path}
+              replace
               className={({ isActive }) =>
                 'nav__link' + (isActive ? ' nav__link--active' : '')
               }
@@ -62,6 +65,7 @@ export function Navigation() {
             <NavLink
               key={item.path}
               to={item.path}
+              replace
               className={({ isActive }) =>
                 'nav__link' + (isActive ? ' nav__link--active' : '')
               }

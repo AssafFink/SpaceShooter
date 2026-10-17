@@ -20,7 +20,9 @@ export function HomePage() {
 
       <p className="home-page__tagline">חסלו את כל האויבים והשלימו 10 שלבים!</p>
 
-      <Link to={ROUTES.game} className="btn btn--success home-page__start">
+      {/* `replace` everywhere: in-app navigation never stacks history, so the
+          phone's Back button leaves the app (see App.tsx). */}
+      <Link to={ROUTES.game} replace className="btn btn--success home-page__start">
         התחל
       </Link>
     </div>

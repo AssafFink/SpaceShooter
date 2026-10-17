@@ -5,6 +5,8 @@
   width: 100%;
   max-width: 100%;
   padding: var(--spacing-md);
+  /* Keep "End Game" above the gesture bar / home indicator (viewport-fit=cover). */
+  padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom, 0px));
   gap: var(--spacing-md);
   align-items: center;
   /* Prevents Pull-to-Refresh/Overscroll Bounce in the game area (ARCHITECTURE §36, §55). */
@@ -25,6 +27,7 @@
 @media (orientation: landscape) and (max-height: 500px) {
   .game-page {
     padding: var(--spacing-xs) var(--spacing-sm);
+    padding-bottom: calc(var(--spacing-xs) + env(safe-area-inset-bottom, 0px));
     gap: var(--spacing-xs);
   }
 }

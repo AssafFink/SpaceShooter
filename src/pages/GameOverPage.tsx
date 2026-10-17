@@ -48,7 +48,7 @@ export function GameOverPage() {
           השלב שהושג: <strong className="game-over-page__level">{state.levelReached}</strong>
         </p>
       </div>
-      <Link to={ROUTES.game} className="btn btn--success game-over-page__new-game">
+      <Link to={ROUTES.game} replace className="btn btn--success game-over-page__new-game">
         משחק חדש
       </Link>
     </div>

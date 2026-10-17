@@ -78,7 +78,7 @@ export function GamePage() {
   function confirmEndGame() {
     audioService.stopMusic();
     setConfirmOpen(false);
-    navigate(ROUTES.home);
+    navigate(ROUTES.home, { replace: true });
   }
 
   return (
