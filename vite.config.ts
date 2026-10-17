@@ -40,7 +40,7 @@ export default defineConfig(({ command }) => ({
     spaFallback(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg'],
+      includeAssets: ['favicon-16.png', 'favicon-32.png', 'favicon-48.png', 'favicon-192.png'],
       manifest: {
         name: 'Space Shooter',
         short_name: 'Space Shooter',
