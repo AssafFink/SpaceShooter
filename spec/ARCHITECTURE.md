@@ -642,7 +642,6 @@ interface GameResult {
 
 ```text
 spaceShooter.statistics
-spaceShooter.soundMuted
 ```
 
 ---
@@ -727,8 +726,7 @@ spaceShooter.soundMuted
 * Laser Sound.
 * Enemy Explosion Sound.
 * Cannon Explosion Sound.
-* Mute / Unmute.
-* שמירת הגדרת Mute.
+* Start / Stop של Background Music (נקרא מ-GamePage).
 
 אין לנהל Audio בנפרד בכל Component.
 
@@ -739,9 +737,9 @@ spaceShooter.soundMuted
 Background Music צריכה:
 
 * להתנגן בלולאה.
-* לפעול בכלל האפליקציה.
-* להמשיך גם במעבר בין מסכים ככל שניתן.
-* לא להתחיל מחדש בכל שינוי Route.
+* להתחיל רק בהתחלת משחק חדש (mount של GamePage) — לא בכניסה לאתר.
+* להמשיך גם במעבר בין מסכים (למשל ל-`/game-over`) ולא להתחיל מחדש בכל שינוי Route.
+* להיעצר (ולחזור להתחלה) רק באישור סיום משחק בחלון האישור.
 
 יש לקחת בחשבון מגבלות Browser Autoplay.
 
@@ -751,27 +749,7 @@ Background Music צריכה:
 
 # 32. Sound Settings
 
-המערכת תכיל State אחד:
-
-```ts
-soundMuted: boolean
-```
-
-כאשר:
-
-```text
-soundMuted = true
-```
-
-יש להשתיק את כל Audio באפליקציה.
-
-כאשר:
-
-```text
-soundMuted = false
-```
-
-יש לאפשר את כל Audio.
+אין Mute ואין Sound Toggle — כל ה-Audio פעיל תמיד.
 
 אין Volume Slider.
 
@@ -781,13 +759,7 @@ soundMuted = false
 
 # 33. Sound Persistence
 
-הערך `soundMuted` יישמר ב:
-
-```text
-spaceShooter.soundMuted
-```
-
-בטעינת האפליקציה יש לקרוא את הערך ולהחיל אותו.
+אין הגדרת סאונד לשמירה (המפתח `spaceShooter.soundMuted` אינו בשימוש עוד).
 
 ---
 
@@ -946,7 +918,6 @@ dir="rtl"
 * חיים.
 * שלב.
 * מספר אויבים שנותרו.
-* Sound Toggle.
 * סיים משחק.
 
 ה־HUD צריך להיות קריא גם ב־Mobile.
@@ -1082,12 +1053,6 @@ Space Shooter
 []
 ```
 
-אם `soundMuted` אינו קיים:
-
-```ts
-false
-```
-
 אם JSON השמור ב־localStorage פגום, אין לגרום ל־Application Crash.
 
 יש לחזור לערכי Default תקינים.
@@ -1105,8 +1070,6 @@ false
 ```ts
 getStatistics()
 saveGameResult()
-getSoundMuted()
-setSoundMuted()
 ```
 
 ---
@@ -1315,9 +1278,9 @@ Cloud Database
 
 ### Audio
 
-* Mute.
-* Unmute.
-* Persistence של Mute לאחר Refresh.
+* מוזיקה אינה מתנגנת בכניסה לאתר.
+* מוזיקה מתחילה בהתחלת משחק.
+* מוזיקה נעצרת רק באישור סיום משחק.
 
 ### Responsive
 
@@ -1437,7 +1400,7 @@ export const GAME_CONFIG = {
 16. Win ו־Loss נשמרים ב־localStorage.
 17. משחק שהופסק ידנית אינו נשמר.
 18. מסך Statistics מציג את הנתונים הנכונים.
-19. Sound Toggle עובד ונשמר.
+19. מוזיקת הרקע מתחילה בהתחלת משחק ונעצרת באישור סיום משחק.
 20. האפליקציה Responsive.
 21. המשחק עובד ב־Mobile Portrait וב־Mobile Landscape.
 22. שינוי Orientation בזמן המשחק אינו מאפס את Score, Lives או Level.

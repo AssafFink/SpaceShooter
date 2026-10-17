@@ -11,24 +11,28 @@ import type { EnemySize } from '../types/game';
  * BufferSource per shot so rapid fire can overlap. Background music is a
  * looping audio file (`cfg.music.src`), routed into the same gain graph via a
  * MediaElementAudioSourceNode. All three go through the same sfx/music gains,
- * so mute and volume behave identically. No component touches Web Audio
- * directly (§30): the game engine emits events, `useAudio` drives mute/unlock,
- * and both go through this single module.
+ * so volume behaves identically. No component touches Web Audio directly
+ * (§30): the game engine emits events, `useAudio` drives unlock/suspend,
+ * GamePage starts/stops the music, and all of it goes through this module.
  *
- * Graph: master → destination, with music/sfx sub-gains under master. Mute
- * (§32, no volume slider) ramps master to 0. Autoplay policy (§31): the
- * AudioContext is created and resumed only on the first user interaction, via
- * `unlock()`. If Web Audio is unavailable every function is a safe no-op — the
- * game never crashes over sound (mirrors storageService's defensive style).
+ * Graph: master → destination, with music/sfx sub-gains under master. There
+ * is no mute — sound effects always play, and background music plays from
+ * the start of a game until the player confirms "End Game"
+ * (`startMusic()`/`stopMusic()`). Autoplay policy (§31): the AudioContext is
+ * resumed on the first user interaction, via `unlock()`. If Web Audio is
+ * unavailable every function is a safe no-op — the game never crashes over
+ * sound (mirrors storageService's defensive style).
  */
 
 const cfg = GAME_CONFIG.audio;
 
 let ctx: AudioContext | null = null;
-let masterGain: GainNode | null = null;
 let musicGain: GainNode | null = null;
 let sfxGain: GainNode | null = null;
-let muted = false;
+// Whether background music should currently be playing (a game was started
+// and not yet ended by the player). Lets unlock()/resume() restart it after
+// an autoplay block or a backgrounded tab.
+let musicActive = false;
 
 // Background-music element, wired into musicGain the first time it's needed.
 // The MediaElementAudioSourceNode can only be created once per <audio>
@@ -49,7 +53,7 @@ function ensure(): AudioContext | null {
     if (typeof AudioContext === 'undefined') return null;
     const context = new AudioContext();
     const master = context.createGain();
-    master.gain.value = muted ? 0 : cfg.masterVolume;
+    master.gain.value = cfg.masterVolume;
     master.connect(context.destination);
 
     const music = context.createGain();
@@ -61,7 +65,6 @@ function ensure(): AudioContext | null {
     sfx.connect(master);
 
     ctx = context;
-    masterGain = master;
     musicGain = music;
     sfxGain = sfx;
   } catch {
@@ -116,19 +119,16 @@ function ensureMusicElement(context: AudioContext): HTMLAudioElement | null {
   return musicElement;
 }
 
-function startMusic(): void {
+function playMusicElement(): void {
   const context = ensure();
   if (!context) return;
+  if (context.state === 'suspended') void context.resume();
   const element = ensureMusicElement(context);
   if (!element) return;
   void element.play().catch(() => {
     // Autoplay was blocked (e.g. gesture requirement not yet satisfied) —
-    // the next unlock()/setMuted(false) call will retry.
+    // the next unlock() call will retry while musicActive is set.
   });
-}
-
-function stopMusic(): void {
-  musicElement?.pause();
 }
 
 /** Fetches and decodes the laser SFX once; safe to call repeatedly. */
@@ -146,13 +146,30 @@ function loadLaserBuffer(context: AudioContext): void {
 }
 
 export const audioService = {
-  /** Resume audio after the first user gesture and start music if unmuted (§31). */
+  /**
+   * Resume audio after the first user gesture (§31) and load the laser SFX.
+   * Also retries the music if a game already asked for it.
+   */
   unlock(): void {
     const context = ensure();
     if (!context) return;
     if (context.state === 'suspended') void context.resume();
     loadLaserBuffer(context);
-    if (!muted) startMusic();
+    if (musicActive) playMusicElement();
+  },
+
+  /** Starts the background music for a new game (no-op if already playing). */
+  startMusic(): void {
+    musicActive = true;
+    playMusicElement();
+  },
+
+  /** Stops the background music and rewinds it, so the next game starts fresh. */
+  stopMusic(): void {
+    musicActive = false;
+    if (!musicElement) return;
+    musicElement.pause();
+    musicElement.currentTime = 0;
   },
 
   /**
@@ -166,23 +183,10 @@ export const audioService = {
     musicElement?.pause();
   },
 
-  /** Resumes the AudioContext and music after `suspend()`, unless muted. */
+  /** Resumes the AudioContext after `suspend()`, and the music if a game is on. */
   resume(): void {
     if (ctx && ctx.state === 'suspended') void ctx.resume();
-    if (!muted) startMusic();
-  },
-
-  /** Mute/unmute everything together (§32). Ramps master gain; toggles music. */
-  setMuted(value: boolean): void {
-    muted = value;
-    if (masterGain && ctx) {
-      masterGain.gain.setTargetAtTime(value ? 0 : cfg.masterVolume, ctx.currentTime, 0.02);
-    }
-    if (value) {
-      stopMusic();
-    } else if (ctx) {
-      startMusic();
-    }
+    if (musicActive) playMusicElement();
   },
 
   playLaser(): void {

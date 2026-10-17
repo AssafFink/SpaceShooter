@@ -6,6 +6,7 @@ import { ConfirmEndGameDialog } from '../components/game-ui/ConfirmEndGameDialog
 import { GameHud } from '../components/game-ui/GameHud';
 import { LevelCompleteMessage } from '../components/game-ui/LevelCompleteMessage';
 import { useGameEngine } from '../hooks/useGameEngine';
+import { audioService } from '../services/audioService';
 import { saveGameResult } from '../services/storageService';
 import { ROUTES } from '../types/navigation';
 import type { GameOverState } from '../types/navigation';
@@ -24,12 +25,23 @@ import './GamePage.css';
  * `savedRef` guarantees the save happens exactly once per game, including
  * under React StrictMode. A deliberate end (Flow 7) still navigates to `/`
  * without touching the Service at all — it isn't saved.
+ *
+ * Background music starts when a game starts (this page mounts) and stops
+ * only when the player confirms "End Game" — not on "End Game" alone, and
+ * not on win/loss.
  */
 export function GamePage() {
   const navigate = useNavigate();
   const { containerRef, canvasRef, stats, pause, resume } = useGameEngine();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const savedRef = useRef(false);
+
+  // No cleanup on purpose: music keeps playing past this page (e.g. on
+  // /game-over) until a confirmed End Game. startMusic() is idempotent, so
+  // the StrictMode double-run is harmless.
+  useEffect(() => {
+    audioService.startMusic();
+  }, []);
 
   useEffect(() => {
     if (stats.status !== 'won' && stats.status !== 'lost') return;
@@ -64,6 +76,7 @@ export function GamePage() {
   }
 
   function confirmEndGame() {
+    audioService.stopMusic();
     setConfirmOpen(false);
     navigate(ROUTES.home);
   }

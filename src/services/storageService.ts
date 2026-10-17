@@ -3,7 +3,7 @@ import type { GameResult, GameResultType } from '../types/statistics';
 /**
  * Centralized localStorage access — Milestone 6.
  * Source: spec/ARCHITECTURE.md §26 (keys), §27 (statistics storage),
- * §32-33 (sound persistence), §48 (error handling), §49 (single service).
+ * §48 (error handling), §49 (single service).
  *
  * No other module in the app reads or writes localStorage directly.
  * Every read/write here is wrapped so corrupted data or a blocked storage
@@ -12,7 +12,6 @@ import type { GameResult, GameResultType } from '../types/statistics';
  */
 
 const STATISTICS_KEY = 'spaceShooter.statistics';
-const SOUND_MUTED_KEY = 'spaceShooter.soundMuted';
 
 /** Type guard for a single, well-formed GameResult entry. */
 function isGameResult(value: unknown): value is GameResult {
@@ -85,25 +84,5 @@ export function saveGameResult(input: {
     localStorage.setItem(STATISTICS_KEY, JSON.stringify([...existing, newResult]));
   } catch {
     // Best-effort persistence — a failed save must not break the game flow.
-  }
-}
-
-/** Whether audio is muted. Defaults to false (unmuted) if unset or corrupt. */
-export function getSoundMuted(): boolean {
-  try {
-    const raw = localStorage.getItem(SOUND_MUTED_KEY);
-    if (raw === null) return false;
-    return JSON.parse(raw) === true;
-  } catch {
-    return false;
-  }
-}
-
-/** Persists the mute preference. Silently no-ops if storage is unavailable. */
-export function setSoundMuted(muted: boolean): void {
-  try {
-    localStorage.setItem(SOUND_MUTED_KEY, JSON.stringify(muted));
-  } catch {
-    // Best-effort persistence — a failed write must not break the toggle.
   }
 }

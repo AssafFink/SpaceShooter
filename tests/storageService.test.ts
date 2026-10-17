@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { getSoundMuted, getStatistics, saveGameResult, setSoundMuted } from '../src/services/storageService';
+import { getStatistics, saveGameResult } from '../src/services/storageService';
 import { createMemoryStorage } from './helpers';
 
 // storageService reads the `localStorage` global at call time (ARCHITECTURE
@@ -98,23 +98,5 @@ describe('storageService — statistics (ARCHITECTURE §27-28, PRD §4.15)', () 
     } finally {
       crypto.randomUUID = originalRandomUUID;
     }
-  });
-});
-
-describe('storageService — sound preference (ARCHITECTURE §32-33)', () => {
-  it('defaults to unmuted (false) when nothing was saved', () => {
-    expect(getSoundMuted()).toBe(false);
-  });
-
-  it('persists the mute preference across reads', () => {
-    setSoundMuted(true);
-    expect(getSoundMuted()).toBe(true);
-    setSoundMuted(false);
-    expect(getSoundMuted()).toBe(false);
-  });
-
-  it('falls back to false for corrupt stored value', () => {
-    localStorage.setItem('spaceShooter.soundMuted', 'not-json{{');
-    expect(getSoundMuted()).toBe(false);
   });
 });

@@ -1,4 +1,3 @@
-import { SoundToggle } from '../common/SoundToggle';
 import './GameHud.css';
 
 interface GameHudProps {
@@ -32,8 +31,8 @@ function HudStat({ icon, label, value, className }: HudStatProps) {
 
 /**
  * HUD for the game screen — spec/PRD.md §4.3, spec/ARCHITECTURE.md §41,
- * spec/DESIGN.md (Mockup "Game"). Milestone 5: styled HUD cards + Sound
- * Toggle (the same `SoundContext` shared with Navigation).
+ * spec/DESIGN.md (Mockup "Game"). Milestone 5: styled HUD cards. (The Sound
+ * Toggle that used to sit here was removed — audio is always on.)
  *
  * The four stats are fed from the engine (GameEngine via useGameEngine) and
  * update in real time. Doesn't hide a significant part of the game area
@@ -42,7 +41,6 @@ function HudStat({ icon, label, value, className }: HudStatProps) {
 export function GameHud({ score, lives, currentLevel, enemiesRemaining }: GameHudProps) {
   return (
     <div className="game-hud">
-      <SoundToggle className="game-hud__sound" />
       <div className="game-hud__stats">
         <HudStat icon="👾" label="נותרו" value={enemiesRemaining} className="game-hud__stat--enemies" />
         <HudStat icon="🚀" label="שלב" value={currentLevel} className="game-hud__stat--level" />

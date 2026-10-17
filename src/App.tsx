@@ -24,8 +24,8 @@ function App() {
   const location = useLocation();
   const isActiveGame = location.pathname === ROUTES.game;
 
-  // The app's audio layer (Milestone 7): syncs Mute with SoundContext and
-  // starts background music after the first interaction. Cross-screen, composed once.
+  // The app's audio layer (Milestone 7): unlocks audio on the first
+  // interaction and pauses it while backgrounded. Cross-screen, composed once.
   useAudio();
 
   return (

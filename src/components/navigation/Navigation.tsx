@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { SoundToggle } from '../common/SoundToggle';
 import { NAV_ITEMS } from '../../types/navigation';
 import './Navigation.css';
 
@@ -10,7 +9,6 @@ import './Navigation.css';
  * Source: spec/ARCHITECTURE.md §38, spec/DESIGN.md.
  *
  * Hidden entirely during an active game (App.tsx, Milestone 5) — PRD §4.2, ARCHITECTURE §39.
- * Includes the shared SoundToggle (spec/PRD.md §4.18) — the same state is shown in GameHud too.
  */
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,8 +40,6 @@ export function Navigation() {
         </nav>
 
         <div className="nav__actions">
-          <SoundToggle />
-
           {/* Hamburger button — Mobile only */}
           <button
             type="button"
