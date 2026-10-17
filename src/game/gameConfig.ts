@@ -115,7 +115,7 @@ export const GAME_CONFIG = {
    */
   audio: {
     masterVolume: 0.6,
-    musicVolume: 0.32,
+    musicVolume: 1.0,
     sfxVolume: 0.55,
     /**
      * Laser sound: a short one-shot file, played through sfxGain per shot.
