@@ -31,6 +31,7 @@ CROPS = {
     "enemy-small": (812, 298, 898, 430),   # green,  1 hit
     "enemy-medium": (942, 298, 1048, 420),  # pink,   2 hits
     "enemy-large": (1074, 298, 1172, 419),  # yellow, 3 hits
+    "enemy-huge": (1178, 310, 1278, 410),   # blue,   4 hits (added post-MVP)
     "cannon": (930, 558, 1028, 688),        # front pose, barrel pointing up
     "laser": (816, 788, 864, 908),          # laser projectile
     "explosion-small": (908, 798, 975, 902),

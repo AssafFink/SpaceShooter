@@ -1,6 +1,7 @@
 import enemySmallUrl from '../assets/images/enemy-small.png';
 import enemyMediumUrl from '../assets/images/enemy-medium.png';
 import enemyLargeUrl from '../assets/images/enemy-large.png';
+import enemyHugeUrl from '../assets/images/enemy-huge.png';
 import cannonUrl from '../assets/images/cannon.png';
 import laserUrl from '../assets/images/laser.png';
 import explosionSmallUrl from '../assets/images/explosion-small.png';
@@ -26,6 +27,7 @@ export type SpriteName =
   | 'enemy-small'
   | 'enemy-medium'
   | 'enemy-large'
+  | 'enemy-huge'
   | 'cannon'
   | 'laser'
   | 'explosion-small'
@@ -37,6 +39,7 @@ const URLS: Record<SpriteName, string> = {
   'enemy-small': enemySmallUrl,
   'enemy-medium': enemyMediumUrl,
   'enemy-large': enemyLargeUrl,
+  'enemy-huge': enemyHugeUrl,
   cannon: cannonUrl,
   laser: laserUrl,
   'explosion-small': explosionSmallUrl,

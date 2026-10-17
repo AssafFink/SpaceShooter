@@ -30,7 +30,7 @@ export interface Projectile {
 }
 
 /** Source: spec/ARCHITECTURE.md §14-15. Size also doubles as the strength measure (PRD §4.6). */
-export type EnemySize = 'small' | 'medium' | 'large';
+export type EnemySize = 'small' | 'medium' | 'large' | 'huge';
 
 /** Source: spec/ARCHITECTURE.md §14. */
 export interface Enemy {
@@ -96,7 +96,7 @@ export type GameStatus =
 /**
  * Ranges only — the actual values are rolled from them at the start of
  * every level (ARCHITECTURE §18-19). Enemy types are distinguished by size
- * alone; the three probabilities sum to 1.
+ * alone; the four probabilities sum to 1.
  */
 export interface LevelConfig {
   level: number;
@@ -109,6 +109,7 @@ export interface LevelConfig {
   smallProbability: number;
   mediumProbability: number;
   largeProbability: number;
+  hugeProbability: number;
 }
 
 /** What the UI (React) needs to know from the engine — and nothing more (ARCHITECTURE §54). */

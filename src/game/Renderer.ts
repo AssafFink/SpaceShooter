@@ -23,18 +23,23 @@ const ENEMY_BODY_COLOR: Record<EnemySize, string> = {
   small: colors.enemySmall,
   medium: colors.enemyMedium,
   large: colors.enemyLarge,
+  huge: colors.enemyHuge,
 };
 
 const ENEMY_SPRITE: Record<EnemySize, SpriteName> = {
   small: 'enemy-small',
   medium: 'enemy-medium',
   large: 'enemy-large',
+  huge: 'enemy-huge',
 };
 
 const EXPLOSION_SPRITE: Record<ExplosionVariant, SpriteName> = {
   small: 'explosion-small',
   medium: 'explosion-medium',
   large: 'explosion-large',
+  // No dedicated sprite in the style guide — reuse the large blast; it is
+  // drawn bigger anyway because the explosion size follows the enemy radius.
+  huge: 'explosion-large',
   cannon: 'explosion-cannon',
 };
 
@@ -161,7 +166,7 @@ export class Renderer {
   /**
    * Draws a friendly, funny space creature: a round dome + curly "legs" +
    * two eyes. Source: spec/DESIGN.md ("funny, colorful space creatures"),
-   * ARCHITECTURE §43. All three sizes share the same draw function — they
+   * ARCHITECTURE §43. All four sizes share the same draw function — they
    * differ only in size and color (§15).
    */
   drawEnemies(enemies: readonly Enemy[]): void {

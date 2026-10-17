@@ -8,7 +8,8 @@ function expectedHitPoints(level: (typeof LEVELS)[number]): number {
   return (
     level.smallProbability * enemyTypes.small.hitPoints +
     level.mediumProbability * enemyTypes.medium.hitPoints +
-    level.largeProbability * enemyTypes.large.hitPoints
+    level.largeProbability * enemyTypes.large.hitPoints +
+    level.hugeProbability * enemyTypes.huge.hitPoints
   );
 }
 
@@ -28,8 +29,43 @@ describe('LEVELS — shape (ARCHITECTURE §18, PRD §4.9)', () => {
 
   it('has size probabilities that sum to 1 for every level', () => {
     for (const level of LEVELS) {
-      const sum = level.smallProbability + level.mediumProbability + level.largeProbability;
+      const sum =
+        level.smallProbability +
+        level.mediumProbability +
+        level.largeProbability +
+        level.hugeProbability;
       expect(sum).toBeCloseTo(1, 5);
+    }
+  });
+});
+
+describe('LEVELS — enemy types unlock per level (post-MVP)', () => {
+  const allowed: Record<number, string[]> = {
+    1: ['small'],
+    2: ['small', 'medium'],
+    3: ['small', 'medium', 'large'],
+  };
+
+  it('level 1 = green only, 2 adds pink, 3 adds yellow, 4+ all four', () => {
+    for (const level of LEVELS) {
+      const present = (['small', 'medium', 'large', 'huge'] as const).filter(
+        (size) => level[`${size}Probability`] > 0,
+      );
+      expect(present).toEqual(allowed[level.level] ?? ['small', 'medium', 'large', 'huge']);
+    }
+  });
+
+  it('ranks frequency small > medium > large > huge wherever a type appears', () => {
+    for (const level of LEVELS) {
+      const weights = [
+        level.smallProbability,
+        level.mediumProbability,
+        level.largeProbability,
+        level.hugeProbability,
+      ].filter((p) => p > 0);
+      for (let i = 1; i < weights.length; i++) {
+        expect(weights[i]).toBeLessThan(weights[i - 1]);
+      }
     }
   });
 });

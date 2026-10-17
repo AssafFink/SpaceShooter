@@ -60,6 +60,8 @@ export const GAME_CONFIG = {
     small: { hitPoints: 1, score: 1, radius: 15 },
     medium: { hitPoints: 2, score: 2, radius: 22 },
     large: { hitPoints: 3, score: 3, radius: 30 },
+    /** Blue creature (added post-MVP): the toughest, slightly larger than large. */
+    huge: { hitPoints: 4, score: 4, radius: 32 },
   },
 
   enemy: {
@@ -129,6 +131,7 @@ export const GAME_CONFIG = {
       small: 0.18,
       medium: 0.24,
       large: 0.32,
+      huge: 0.38,
     },
     /** Cannon explosion: a large noise burst + a low thump. */
     cannonExplosion: { durationSeconds: 0.6, filterFreq: 800, thumpFreq: 72 },
@@ -152,11 +155,12 @@ export const GAME_CONFIG = {
     projectile: '#FF6BFF',
     projectileGlow: '#9B5CFF',
     // Fallback colors matching the Sprites extracted from style-guide.png
-    // (Milestone 7): green=small, pink=medium, yellow=large. Used only if
-    // the Sprite fails to load.
+    // (Milestone 7): green=small, pink=medium, yellow=large, blue=huge. Used
+    // only if the Sprite fails to load.
     enemySmall: '#4CD964',
     enemyMedium: '#FF4D6D',
     enemyLarge: '#FFC83D',
+    enemyHuge: '#2E9BFF',
     enemyEye: '#0B1026',
     enemyEyeSpark: '#F8FAFF',
     explosionCore: '#FFC83D',
@@ -175,16 +179,22 @@ export const GAME_CONFIG = {
  * enemies, shorter Spawn intervals, higher speed, and more medium/large
  * enemies. The values are a starting point for kids 6-12 (PRD §4.9, §5) —
  * fine-tuned in Milestone 9 (spec/plans/milestone-9.md §4).
+ *
+ * Enemy types unlock one per level (post-MVP): level 1 green only, level 2
+ * adds pink, level 3 adds yellow, and from level 4 all four — including the
+ * blue "huge" enemy — can appear. Once unlocked, frequency always ranks
+ * small > medium > large > huge. Speeds are ~12% above the MVP tuning; the
+ * child-friendly ceilings in tests/levels.test.ts still hold.
  */
 export const LEVELS: readonly LevelConfig[] = [
-  { level: 1, enemyCountMin: 4, enemyCountMax: 6, spawnIntervalMinSeconds: 1.6, spawnIntervalMaxSeconds: 2.4, enemySpeedMin: 30, enemySpeedMax: 45, smallProbability: 0.7, mediumProbability: 0.25, largeProbability: 0.05 },
-  { level: 2, enemyCountMin: 5, enemyCountMax: 7, spawnIntervalMinSeconds: 1.5, spawnIntervalMaxSeconds: 2.2, enemySpeedMin: 32, enemySpeedMax: 48, smallProbability: 0.65, mediumProbability: 0.28, largeProbability: 0.07 },
-  { level: 3, enemyCountMin: 6, enemyCountMax: 9, spawnIntervalMinSeconds: 1.4, spawnIntervalMaxSeconds: 2.1, enemySpeedMin: 35, enemySpeedMax: 52, smallProbability: 0.6, mediumProbability: 0.3, largeProbability: 0.1 },
-  { level: 4, enemyCountMin: 8, enemyCountMax: 11, spawnIntervalMinSeconds: 1.3, spawnIntervalMaxSeconds: 1.9, enemySpeedMin: 38, enemySpeedMax: 56, smallProbability: 0.55, mediumProbability: 0.32, largeProbability: 0.13 },
-  { level: 5, enemyCountMin: 9, enemyCountMax: 13, spawnIntervalMinSeconds: 1.2, spawnIntervalMaxSeconds: 1.8, enemySpeedMin: 42, enemySpeedMax: 60, smallProbability: 0.5, mediumProbability: 0.35, largeProbability: 0.15 },
-  { level: 6, enemyCountMin: 11, enemyCountMax: 15, spawnIntervalMinSeconds: 1.1, spawnIntervalMaxSeconds: 1.7, enemySpeedMin: 45, enemySpeedMax: 65, smallProbability: 0.45, mediumProbability: 0.37, largeProbability: 0.18 },
-  { level: 7, enemyCountMin: 12, enemyCountMax: 17, spawnIntervalMinSeconds: 1.0, spawnIntervalMaxSeconds: 1.6, enemySpeedMin: 48, enemySpeedMax: 70, smallProbability: 0.4, mediumProbability: 0.38, largeProbability: 0.22 },
-  { level: 8, enemyCountMin: 14, enemyCountMax: 19, spawnIntervalMinSeconds: 1.0, spawnIntervalMaxSeconds: 1.5, enemySpeedMin: 52, enemySpeedMax: 75, smallProbability: 0.35, mediumProbability: 0.4, largeProbability: 0.25 },
-  { level: 9, enemyCountMin: 15, enemyCountMax: 20, spawnIntervalMinSeconds: 0.95, spawnIntervalMaxSeconds: 1.45, enemySpeedMin: 55, enemySpeedMax: 80, smallProbability: 0.32, mediumProbability: 0.4, largeProbability: 0.28 },
-  { level: 10, enemyCountMin: 17, enemyCountMax: 22, spawnIntervalMinSeconds: 0.9, spawnIntervalMaxSeconds: 1.4, enemySpeedMin: 60, enemySpeedMax: 88, smallProbability: 0.3, mediumProbability: 0.4, largeProbability: 0.3 },
+  { level: 1, enemyCountMin: 4, enemyCountMax: 6, spawnIntervalMinSeconds: 1.6, spawnIntervalMaxSeconds: 2.4, enemySpeedMin: 34, enemySpeedMax: 50, smallProbability: 1, mediumProbability: 0, largeProbability: 0, hugeProbability: 0 },
+  { level: 2, enemyCountMin: 5, enemyCountMax: 7, spawnIntervalMinSeconds: 1.5, spawnIntervalMaxSeconds: 2.2, enemySpeedMin: 36, enemySpeedMax: 54, smallProbability: 0.7, mediumProbability: 0.3, largeProbability: 0, hugeProbability: 0 },
+  { level: 3, enemyCountMin: 6, enemyCountMax: 9, spawnIntervalMinSeconds: 1.4, spawnIntervalMaxSeconds: 2.1, enemySpeedMin: 39, enemySpeedMax: 58, smallProbability: 0.55, mediumProbability: 0.3, largeProbability: 0.15, hugeProbability: 0 },
+  { level: 4, enemyCountMin: 8, enemyCountMax: 11, spawnIntervalMinSeconds: 1.3, spawnIntervalMaxSeconds: 1.9, enemySpeedMin: 43, enemySpeedMax: 63, smallProbability: 0.5, mediumProbability: 0.26, largeProbability: 0.16, hugeProbability: 0.08 },
+  { level: 5, enemyCountMin: 9, enemyCountMax: 13, spawnIntervalMinSeconds: 1.2, spawnIntervalMaxSeconds: 1.8, enemySpeedMin: 47, enemySpeedMax: 67, smallProbability: 0.48, mediumProbability: 0.26, largeProbability: 0.16, hugeProbability: 0.1 },
+  { level: 6, enemyCountMin: 11, enemyCountMax: 15, spawnIntervalMinSeconds: 1.1, spawnIntervalMaxSeconds: 1.7, enemySpeedMin: 50, enemySpeedMax: 73, smallProbability: 0.46, mediumProbability: 0.27, largeProbability: 0.16, hugeProbability: 0.11 },
+  { level: 7, enemyCountMin: 12, enemyCountMax: 17, spawnIntervalMinSeconds: 1.0, spawnIntervalMaxSeconds: 1.6, enemySpeedMin: 54, enemySpeedMax: 78, smallProbability: 0.44, mediumProbability: 0.27, largeProbability: 0.17, hugeProbability: 0.12 },
+  { level: 8, enemyCountMin: 14, enemyCountMax: 19, spawnIntervalMinSeconds: 1.0, spawnIntervalMaxSeconds: 1.5, enemySpeedMin: 58, enemySpeedMax: 84, smallProbability: 0.42, mediumProbability: 0.28, largeProbability: 0.17, hugeProbability: 0.13 },
+  { level: 9, enemyCountMin: 15, enemyCountMax: 20, spawnIntervalMinSeconds: 0.95, spawnIntervalMaxSeconds: 1.45, enemySpeedMin: 62, enemySpeedMax: 90, smallProbability: 0.41, mediumProbability: 0.28, largeProbability: 0.18, hugeProbability: 0.13 },
+  { level: 10, enemyCountMin: 17, enemyCountMax: 22, spawnIntervalMinSeconds: 0.9, spawnIntervalMaxSeconds: 1.4, enemySpeedMin: 67, enemySpeedMax: 98, smallProbability: 0.4, mediumProbability: 0.28, largeProbability: 0.18, hugeProbability: 0.14 },
 ];

@@ -60,6 +60,10 @@
   font-size: 2.25rem;
 }
 
+.enemy-sizes__item--huge .enemy-sizes__icon {
+  font-size: 2.5rem;
+}
+
 .enemy-sizes__label {
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-caption);

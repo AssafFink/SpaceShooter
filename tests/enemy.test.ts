@@ -16,6 +16,7 @@ describe('Enemy — hit points & score by size (ARCHITECTURE §15, PRD §4.6)', 
     ['small', 1, 1],
     ['medium', 2, 2],
     ['large', 3, 3],
+    ['huge', 4, 4],
   ] as const)('%s enemy requires %d hit(s) and is worth %d point(s)', (size, hits, score) => {
     const enemy = createEnemy('e1', size, { x: 100, y: 0 }, { x: 100, y: 500 }, 50);
     expect(enemy.hitPoints).toBe(hits);

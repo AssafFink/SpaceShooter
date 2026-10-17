@@ -59,6 +59,7 @@ export class EnemySpawner {
       ['small', config.smallProbability],
       ['medium', config.mediumProbability],
       ['large', config.largeProbability],
+      ['huge', config.hugeProbability],
     ];
     const size = pickWeighted(sizeWeights);
     const radius = getEnemyRadius(size);

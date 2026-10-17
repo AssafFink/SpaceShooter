@@ -1,4 +1,5 @@
 import { Link, Navigate, useLocation } from 'react-router-dom';
+import { Confetti } from '../components/common/Confetti';
 import { ROUTES } from '../types/navigation';
 import type { GameOverState } from '../types/navigation';
 import './GameOverPage.css';
@@ -12,6 +13,8 @@ import './GameOverPage.css';
  * redirects back to `/`.
  *
  * Saving the result to statistics — Milestone 6.
+ *
+ * On a win, a full-screen confetti celebration plays (post-MVP).
  */
 export function GameOverPage() {
   const location = useLocation();
@@ -25,6 +28,7 @@ export function GameOverPage() {
 
   return (
     <div className="page game-over-page">
+      {isWin && <Confetti />}
       <div
         className={`game-over-page__icon game-over-page__icon--${isWin ? 'win' : 'loss'}`}
         aria-hidden="true"

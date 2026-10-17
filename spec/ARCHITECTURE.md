@@ -372,7 +372,7 @@ interface Projectile {
 Enemy צריך לכלול לפחות:
 
 ```ts
-type EnemySize = "small" | "medium" | "large";
+type EnemySize = "small" | "medium" | "large" | "huge";
 
 interface Enemy {
   id: string;
@@ -418,6 +418,17 @@ Hit Points: 3
 Score: 3
 ```
 
+## Huge Enemy (blue, added post-MVP)
+
+```text
+Hit Points: 4
+Score: 4
+```
+
+מעט גדול יותר מ-Large Enemy. מופיע החל משלב 4.
+
+פתיחת סוגים לפי שלב: שלב 1 — Small בלבד; שלב 2 — Small+Medium; שלב 3 — Small+Medium+Large; שלב 4+ — כל הארבעה. שכיחות: Small > Medium > Large > Huge (PRD §4.9).
+
 הבדלת סוג האויב תתבצע באמצעות הגודל בלבד.
 
 אין להציג Health Bar.
@@ -456,6 +467,7 @@ Enemy יכול לעבור דרך Enemy אחר.
 * הסתברות להופעת Small Enemy.
 * הסתברות להופעת Medium Enemy.
 * הסתברות להופעת Large Enemy.
+* הסתברות להופעת Huge Enemy.
 
 אין צורך להשתמש במספרים קבועים לחלוטין.
 
@@ -487,6 +499,7 @@ interface LevelConfig {
   smallEnemyProbability: number;
   mediumEnemyProbability: number;
   largeEnemyProbability: number;
+  hugeEnemyProbability: number;
 }
 ```
 
@@ -938,6 +951,7 @@ Cannon Image
 Small Enemy Image
 Medium Enemy Image
 Large Enemy Image
+Huge Enemy Image
 Explosion Animation
 Background Music
 Laser Sound
@@ -959,7 +973,7 @@ PWA Icons
 * לא מפחיד.
 * מתאים לילדים בגילאי 6–12.
 
-שלושת הסוגים יהיו דומים מבחינת השפה הגרפית אך בעלי גודל שונה.
+ארבעת הסוגים יהיו דומים מבחינת השפה הגרפית אך בעלי גודל שונה.
 
 ---
 
@@ -1388,7 +1402,7 @@ export const GAME_CONFIG = {
 4. התותח מכוון לפי Click או Touch.
 5. קליעי לייזר נעים באופן חזותי אל היעד.
 6. Collision Detection פועל.
-7. שלושת סוגי האויבים דורשים 1, 2 ו־3 פגיעות בהתאמה.
+7. ארבעת סוגי האויבים דורשים 1, 2, 3 ו־4 פגיעות בהתאמה.
 8. מערכת הניקוד פועלת.
 9. האויבים נוצרים בהדרגה.
 10. הקושי עולה בין השלבים.

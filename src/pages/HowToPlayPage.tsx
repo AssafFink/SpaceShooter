@@ -7,16 +7,17 @@ interface EnemySizeInfo {
   className: string;
 }
 
-/** The three enemy sizes — a visual Placeholder (Emoji); real Assets in Milestone 7. */
+/** The four enemy sizes — a visual Placeholder (Emoji); real Assets in Milestone 7. */
 const ENEMY_SIZES: EnemySizeInfo[] = [
   { icon: '👾', label: 'קטן', hits: 'פגיעה 1', className: 'enemy-sizes__item--small' },
   { icon: '👾', label: 'בינוני', hits: '2 פגיעות', className: 'enemy-sizes__item--medium' },
   { icon: '👾', label: 'גדול', hits: '3 פגיעות', className: 'enemy-sizes__item--large' },
+  { icon: '👾', label: 'ענק', hits: '4 פגיעות', className: 'enemy-sizes__item--huge' },
 ];
 
 /**
  * "How to Play" screen — spec/PRD.md §4.16, spec/DESIGN.md (Mockup "How to Play").
- * A short explanation: game objective, how to play (including the three
+ * A short explanation: game objective, how to play (including the four
  * enemy sizes), lives, level transition, loss.
  */
 export function HowToPlayPage() {
