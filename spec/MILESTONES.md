@@ -548,8 +548,8 @@
 
 > הערה: `vite-plugin-pwa` (Workbox) מייצר Service Worker עם Precache אוטומטי
 > של כל קבצי ה-Build (JS/CSS/HTML/תמונות/פונטים) — ראו `vite.config.ts`.
-> אייקוני ה-PWA (192/512/512-maskable/apple-touch) נגזרו מ-`public/favicon.svg`
-> דרך `tools/generate-pwa-icons.mjs`. **אימות Service Worker/Offline בפועל
+> אייקוני ה-PWA (192/512/512-maskable/apple-touch) נוצרים דרך `tools/generate-pwa-icons.mjs`
+> (לאחר ה-MVP: מהמפלצת הירוקה, זהים ל-Favicon — `tools/icon-tile.mjs`). **אימות Service Worker/Offline בפועל
 > (התקנה, ריצה ללא אינטרנט) דורש דפדפן אמיתי (Chrome/Edge)** — סביבת
 > ה-Preview האוטומטית של Claude Code חוסמת רישום Service Worker לחלוטין
 > (`navigator.serviceWorker.register()` נכשל אפילו עבור קובץ SW מינימלי) —
